@@ -13,12 +13,11 @@ total 구하기
  
  걸린 시간은 시작점부터 토탈까지
  
- 1. 0번째와 1번쨰를 합친게 더 크면 더 걸리는 것인가?
- 
  */
 
 
 
+//1. 0번째와 1번쨰를 합친게 더 크면 더 걸리는 것인가? x
 import Foundation
 
 func solution(_ jobs:[[Int]]) -> Int {
