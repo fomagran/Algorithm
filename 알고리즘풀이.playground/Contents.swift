@@ -1,30 +1,50 @@
 //어떤 카드로 시작하느냐
 //같은 카드 중에서도 어떤 카드가 가까운지 확인해야함.
 
-
 import Foundation
 
+var answers:[Int] = []
+var allDepth = Set<[Int]>()
+var cardsCount:Int = 0
+
 func solution(_ board:[[Int]], _ r:Int, _ c:Int) -> Int {
-    let cardsCount = board.flatMap{$0}.filter{$0 != 0}.count
-    return startCardGame(board: board, start: (c,r), count: 0) + cardsCount
+    cardsCount = board.flatMap{$0}.filter{$0 != 0}.count
+    let cards = findAllNumbersLocation(board: board)
+    for card in cards.flatMap({$0}) {
+        let count = moveCurrentToGoal(current: (c,r), goal: card, count: 0, board: board)
+        startCardGame(board: board, start: card, count: count,depth:[])
+    }
+    
+    let min = answers.min() ?? 0
+    return min + cardsCount
 }
 
-func startCardGame(board:[[Int]],start:(Int,Int),count:Int) -> Int {
-    var answer = 0
-    var newBoard = board
-    var newStart = start
+func startCardGame(board:[[Int]],start:(Int,Int),count:Int,depth:[Int]) {
     
-    while !isGameOver(board: newBoard) {
-        let newGoals = findGoal(board: newBoard, current: newStart)
-        let goalAndCount = findMinCountGoal(current: newStart, count: 0, board: newBoard, goals: newGoals)
-        if  newBoard[newStart.1][newStart.0] != 0 {
-            newBoard[newStart.1][newStart.0] = 0
-            newBoard[goalAndCount.0.1][goalAndCount.0.0] = 0
-        }
-        newStart = goalAndCount.0
-        answer += goalAndCount.1
+    var newDepth = depth
+    var newBoard = board
+    var newCount = count
+    
+    if depth.count == cardsCount/2 {
+        allDepth.insert(depth)
+        answers.append(count)
+        return
     }
-    return answer
+    
+    let newGoals = findGoals(board: board, current: start)
+    for goal in newGoals {
+        
+        if  newBoard[start.1][start.0] != 0 {
+            newBoard[start.1][start.0] = 0
+            newBoard[goal.1][goal.0] = 0
+            newDepth.append(board[goal.1][goal.0])
+        }
+        
+        
+        newCount = moveCurrentToGoal(current: start, goal: goal, count: count, board: newBoard)
+        startCardGame(board: newBoard, start: goal, count: newCount,depth: newDepth)
+    }
+    return
 }
 
 func isGameOver(board:[[Int]]) -> Bool {
@@ -32,7 +52,7 @@ func isGameOver(board:[[Int]]) -> Bool {
 }
 
 func findAllNumbersLocation(board:[[Int]]) -> [[(Int,Int)]]{
-    var newCards = Array(repeating: [(Int,Int)](), count: 6)
+    var newCards = Array(repeating: [(Int,Int)](), count: 7)
     for (y,row) in board.enumerated() {
         for (x,number) in row.enumerated() {
             if number != 0 {
@@ -44,6 +64,7 @@ func findAllNumbersLocation(board:[[Int]]) -> [[(Int,Int)]]{
 }
 
 func moveCurrentToGoal(current:(Int,Int),goal:(Int,Int),count:Int,board:[[Int]]) -> Int{
+
         let xCount = moveX(current: current, goal: goal,count: count,board:board)
         let yCount = moveY(current: current, goal: goal,count: count,board:board)
         let newCount = min(xCount,yCount)
@@ -51,21 +72,8 @@ func moveCurrentToGoal(current:(Int,Int),goal:(Int,Int),count:Int,board:[[Int]])
     return newCount
 }
 
-func findMinCountGoal(current:(Int,Int),count:Int,board:[[Int]],goals:[(Int,Int)]) -> ((Int,Int),Int) {
-    var minCount = Int.max
-    var newGoal = current
-    for goal in goals {
-        let newCount = moveCurrentToGoal(current: current, goal: goal, count:count, board: board)
-        if minCount > newCount {
-            minCount = newCount
-            newGoal = goal
-        }
-    }
-    return (newGoal,minCount)
-}
 
-
-func findGoal(board:[[Int]],current:(Int,Int)) -> ([(Int,Int)]) {
+func findGoals(board:[[Int]],current:(Int,Int)) -> ([(Int,Int)]) {
     var goals:[(Int,Int)] = []
 
     let cards = findAllNumbersLocation(board: board)
@@ -194,4 +202,11 @@ func moveCtrlDown(goalY:Int,currentY:Int,x:Int,board:[[Int]]) -> (Int,Int){
     return (x,3)
 }
 
-solution([[3,3,3,2],[0,0,1,0],[0,1,0,0],[2,0,0,3]],0 ,1)
+solution([[1,3,0,0],[2,4,4,0],[0,0,0,2],[3,0,1,0]],1,0)
+
+1355
+2440
+6602
+3010
+
+
