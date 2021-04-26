@@ -11,104 +11,200 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(solution(["java backend junior pizza 150","python frontend senior chicken 210","python frontend senior chicken 150","cpp backend senior pizza 260","java backend junior chicken 80","python backend senior chicken 50"], ["java and backend and junior and pizza 100","python and frontend and senior and chicken 200","cpp and - and senior and pizza 250","- and backend and senior and - 150","- and - and - and chicken 100","- and - and - and - 150"]))
+        
+        print(solution([[1,0,0,3],[2,0,0,0],[0,0,0,2],[3,0,1,0]],1,0))
     }
 
 
 }
 
-func solution(_ info:[String], _ query:[String]) -> [Int] {
+import Foundation
 
-    var counts = [Int]()
-    var applicants = [[String]]()
-    info.forEach{applicants.append($0.components(separatedBy: " "))}
-    applicants.sort{Int($0[4])! > Int($1[4])!}
+var answers:[Int] = []
+var allDepth = Set<[Int]>()
+var cardsCount:Int = 0
+
+func solution(_ board:[[Int]], _ r:Int, _ c:Int) -> Int {
+    cardsCount = board.flatMap{$0}.filter{$0 != 0}.count
+    let cards = findAllNumbersLocation(board: board)
     
-    var language = String()
-    var backOrFront = String()
-    var career = String()
-    var food = String()
+    for card in cards.flatMap({$0}) {
+        let count = moveCurrentToGoal(current: (c,r), goal: card, count: 0, board: board)
+        startCardGame(board: board, start: card, count: count,depth:[])
+    }
     
-    var caseDic = [String:[Int]]()
+    let min = answers.min() ?? 0
+    return min + cardsCount
+}
+
+func startCardGame(board:[[Int]],start:(Int,Int),count:Int,depth:[Int]) {
     
-    for applicant in applicants {
-        language = applicant[0]
-        backOrFront = applicant[1]
-        career = applicant[2]
-        food = applicant[3]
-        let allCases = ["- and - and - and -",
-                   "- and - and - and \(food)",
-                   "- and - and \(career) and -",
-                   "- and \(backOrFront) and - and -",
-                   "\(language) and - and - and -",
-                   "\(language) and - and - and \(food)",
-                   "\(language) and \(backOrFront) and - and -",
-                   "\(language) and - and \(career) and -",
-                   "- and \(backOrFront) and \(career) and -",
-                   "- and \(backOrFront) and - and \(food)",
-                   "- and - and \(career) and \(food)",
-                   "\(language) and \(backOrFront) and \(career) and -",
-                   "\(language) and \(backOrFront) and - and \(food)",
-                   "\(language) and - and \(career) and \(food)",
-                   "- and \(backOrFront) and \(career) and \(food)",
-                   "\(language) and \(backOrFront) and \(career) and \(food)"]
-        for i in 0..<allCases.count {
-            if caseDic[allCases[i]] != nil {
-                caseDic[allCases[i]]!.append(Int(applicant[4])!)
-            }else{
-                caseDic[allCases[i]] = [Int(applicant[4])!]
+    if depth.count == cardsCount/2 {
+        allDepth.insert(depth)
+        answers.append(count)
+        return
+    }
+    
+    var newDepth = depth
+    var newBoard = board
+    
+    let newGoals = findGoals(board: board, current: start)
+    for goal in newGoals {
+        
+        if  newBoard[start.1][start.0] != 0 {
+            newBoard[start.1][start.0] = 0
+            newBoard[goal.1][goal.0] = 0
+            newDepth.append(board[goal.1][goal.0])
+        }
+        
+        let newCount = moveCurrentToGoal(current: start, goal: goal, count: count, board: newBoard)
+        startCardGame(board: newBoard, start: goal, count: newCount,depth: newDepth)
+    }
+    
+    return
+}
+
+func isGameOver(board:[[Int]]) -> Bool {
+    return board.flatMap{$0}.filter{$0 != 0}.count == 0
+}
+
+func findAllNumbersLocation(board:[[Int]]) -> [[(Int,Int)]]{
+    var newCards = Array(repeating: [(Int,Int)](), count: 7)
+    for (y,row) in board.enumerated() {
+        for (x,number) in row.enumerated() {
+            if number != 0 {
+                newCards[number].append((x,y))
             }
         }
     }
-    
-    for q in query {
-        var count = 0
-        var split = q.components(separatedBy: " ")
-        let score = Int(split.removeLast())!
-        let join = String(split.joined(separator: " "))
-        if caseDic[join] == nil {
-            counts.append(0)
-        }else {
-            for number in caseDic[join]! {
-                if number >= score {
-                    count += 1
-                }else{
-                    break
-                }
-            }
-            counts.append(count)
-        }
-    }
-    
-    return counts
+    return newCards
 }
 
-func closestValue(_ arr: [Int],_ target: Int) -> Int {
+func moveCurrentToGoal(current:(Int,Int),goal:(Int,Int),count:Int,board:[[Int]]) -> Int{
+    
+    var minCount:Int = Int.max
+    var queue:[((Int,Int),(Int,Int),Int,[[Int]])] = [(current,goal,count,board)]
 
-    guard arr.count > 1 else { return arr.firstIndex(of: abs(arr[0]))! }
-
-    guard arr.first! <= target else {return 0 }
-    guard target <= arr.last! else {return arr.count-1 }
-
-    var left = 0
-    var right = arr.count - 1
-
-    while left < right {
-        if left == right - 1 {
-            return abs(arr[left] - target) <= abs(arr[right] - target) ? left + 1 : right
-        }
-
-        let middle = (left + right) / 2
-        switch arr[middle] {
-        case target:
-            return middle
-        case ..<target:
-            left = middle
-        default:
-            right = middle
-        }
+    while !queue.isEmpty {
+        let first = queue.removeFirst()
+        moveBFS(current: first.0, goal: first.1, count: first.2,board: first.3, minCount: &minCount,queue:&queue)
     }
-    return 0
+    
+    return minCount
 }
 
 
+func findGoals(board:[[Int]],current:(Int,Int)) -> ([(Int,Int)]) {
+    var goals:[(Int,Int)] = []
+    
+    let cards = findAllNumbersLocation(board: board)
+    
+    let number = board[current.1][current.0]
+    for location in cards[number] {
+        if location != current {
+            goals.append(location)
+            return goals
+        }
+    }
+    
+    goals = cards.flatMap{$0}.filter{$0 != current}
+    
+    return goals
+}
+
+func moveBFS(current:(Int,Int),goal:(Int,Int),count:Int,board:[[Int]],minCount:inout Int,queue: inout [((Int,Int),(Int,Int),Int,[[Int]])]){
+    
+    if current.0 > 3 || current.1 > 3 || current.0 < 0 || current.1 < 0 {
+        return
+    }
+    if count >= minCount {
+        return
+    }
+    
+    if current == goal{
+        if minCount > count {
+            minCount = count
+        }
+        return
+    }
+    
+    let moves = [moveLeft(current: current),moveRight(current: current),moveUp(current: current),moveDown(current: current),moveCtrlLeft(goalX: goal.0, currentX: current.0, y: current.1, board: board),moveCtrlRight(goalX: goal.0, currentX: current.0, y: current.1, board: board),moveCtrlUp(goalY: goal.1, currentY: current.1,x: current.0,board: board),moveCtrlDown(goalY: goal.1, currentY: current.1,x: current.0,board: board)]
+    
+    for move in moves {
+        if current.0 <= 3 && current.1 <= 3 && current.0 >= 0 && current.1 >= 0 {
+            queue.append((move,goal,count+1,board))
+        }
+    }
+    
+    return
+}
+
+func moveLeft(current:(Int,Int)) -> (Int,Int) {
+    return (current.0-1,current.1)
+}
+
+func moveRight(current:(Int,Int)) -> (Int,Int){
+    return (current.0+1,current.1)
+}
+
+func moveDown(current:(Int,Int)) -> (Int,Int) {
+    return (current.0,current.1+1)
+}
+
+func moveUp(current:(Int,Int)) -> (Int,Int) {
+    return (current.0,current.1-1)
+}
+
+func moveCtrlLeft(goalX:Int,currentX:Int,y:Int,board:[[Int]]) -> (Int,Int) {
+    if goalX >= currentX {
+        return (5,5)
+    }
+    var newX = 0
+    for x in goalX..<currentX {
+        if board[y][x] != 0 {
+            newX = x
+        }
+    }
+    
+    return (newX,y)
+}
+
+func moveCtrlRight(goalX:Int,currentX:Int,y:Int,board:[[Int]]) -> (Int,Int){
+    if goalX <= currentX {
+        return (5,5)
+    }
+    for x in currentX+1...goalX {
+        if board[y][x] != 0 {
+            return (x,y)
+        }
+    }
+    
+    return (3,y)
+}
+
+func moveCtrlUp(goalY:Int,currentY:Int,x:Int,board:[[Int]]) -> (Int,Int){
+    if goalY >= currentY {
+        return (5,5)
+    }
+    var newY = 0
+    for y in goalY..<currentY {
+        if board[y][x] != 0 {
+            newY = y
+        }
+    }
+    
+    return (x,newY)
+}
+
+func moveCtrlDown(goalY:Int,currentY:Int,x:Int,board:[[Int]]) -> (Int,Int){
+    if goalY <= currentY {
+        return (5,5)
+    }
+    for y in currentY+1...goalY {
+        if board[y][x] != 0 {
+            return (x,y)
+        }
+    }
+    
+    return (x,3)
+}
