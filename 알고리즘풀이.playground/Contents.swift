@@ -1,41 +1,45 @@
-
 import Foundation
 
 func solution(_ n:Int, _ times:[Int]) -> Int64 {
-    var willEndTimes = times.sorted(by: <).map {($0,$0)}
-    for _ in 1...n {
-        findMinWaitingTime(willEndTimes:&willEndTimes)
-    }
-    return Int64(willEndTimes.map{$0.1 - $0.0}.max()!)
+    
+    //최소시간,최대시간
+    var (min,max) = (Int64(1),Int64(times.max()!) * Int64(n))
+    
+    //이분탐색 이용해서 심사를 받는데 최소 시간을 구함.
+    return binarySearch(times: times, n: n, min: &min, max: &max)
 }
 
-func findMinWaitingTime(willEndTimes:inout [(Int,Int)]) {
+func binarySearch(times:[Int],n:Int,min:inout Int64,max: inout Int64) -> Int64 {
     
-    var first = willEndTimes.removeFirst()
-    first = (first.0,first.1+first.0)
+    //입국심사 최소시간을 담는다.
+    var minTime:Int64 = 0
     
-    let index = binarySearch(willEndTimes.map{$0.1},first.1)
-    willEndTimes.insert(first, at: index)
-}
-
-func binarySearch(_ willEndTimes: [Int],_ endTime: Int) -> Int {
-
-    if willEndTimes.count == 1 {return willEndTimes[0] >= endTime ? 0 : 1}
-    if willEndTimes.first! >= endTime {return 0 }
-    if endTime > willEndTimes.last! {return willEndTimes.count }
-
-    var left = 0
-    var right = willEndTimes.count
-
-    while left < right {
-        let middle = (left + right) / 2
-        if willEndTimes[middle] >= endTime {
-           right = middle
-        }else{
-            left =  middle + 1
+    while min <= max {
+        //최소와 최대를 합쳐 2로 나눈 중간값
+        let mid = (min + max) / 2
+        
+        //사람수(중간값을 times안에 있는 값으로 나눈 것들의 합)
+        let peopleCount = times.map{mid/Int64($0)}.reduce(0,+)
+        
+        //사람 수가 n보다 크거나 작다면
+        if peopleCount >= n {
+            
+            //최소시간을 중간값으로 바꿈.
+            minTime = mid
+            
+            //최대값을 중간값에 -1로 바꿈
+            max = mid - 1
+            
+        //사람 수가 n보다 작다면
+        } else {
+            
+            //최소값을 중간값에 +1로 바꿈
+            min = mid + 1
         }
     }
-    return left
+    
+    //입국심사 최소시간을 반환
+    return minTime
 }
 
 solution(6, [1,2,3,7,10])
