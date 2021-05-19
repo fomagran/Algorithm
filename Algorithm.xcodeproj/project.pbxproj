@@ -16,8 +16,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0453C42025CFD01A00A37064 /* 섬 연결하기.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = "섬 연결하기.playground"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		0453C42925D00BA700A37064 /* 소수 찾기.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = "소수 찾기.playground"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		0469627825A6D5D500E41102 /* Algorithm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Algorithm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0469627B25A6D5D500E41102 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0469627D25A6D5D500E41102 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -44,7 +42,6 @@
 			isa = PBXGroup;
 			children = (
 				04E24FFE25EE6AFA00ECB835 /* 알고리즘풀이.playground */,
-				0453C42025CFD01A00A37064 /* 섬 연결하기.playground */,
 				0469627A25A6D5D500E41102 /* Algorithm */,
 				0469627925A6D5D500E41102 /* Products */,
 			);
@@ -68,7 +65,6 @@
 				0469628425A6D5D700E41102 /* Assets.xcassets */,
 				0469628625A6D5D700E41102 /* LaunchScreen.storyboard */,
 				0469628925A6D5D700E41102 /* Info.plist */,
-				0453C42925D00BA700A37064 /* 소수 찾기.playground */,
 			);
 			path = Algorithm;
 			sourceTree = "<group>";
