@@ -5,74 +5,38 @@
  */
 import Foundation
 
-
 var str:[String] = []
-var maxLength:Int = 0
+var maxLength:Int = 1
 
 func solution(_ s:String) -> Int {
     str = s.map{String($0)}
-
-    var left:Int = s.count/2 - 1
-    var right:Int = s.count/2
     
-    while left > 0 {
-        let min = 0
-        let oddMax = left + left
-        let evenMax = left + left + 1
-        compareOdd(left: min, middle: left, right: oddMax)
-        compareEven(left: min, middle: left, right: evenMax)
-        left -= 1
+    if s.count == 2 {
+        return str[0] == str[1] ? 2 : 1
     }
     
-    while right < s.count-1 {
-        let max = s.count - 1
-        let oddMin = max - (max - right)
-        let evenMin = right - (max - right) - 1
-        compareOdd(left: oddMin, middle: right, right: max)
-        compareEven(left: evenMin, middle: right, right: max)
-        right += 1
+    var new:[String] = []
+    for i in 0..<str.count-1 {
+        new = []
+        new.append(str[i])
+        for j in i+1..<str.count {
+            new.append(str[j])
+            if new.count <= maxLength { continue }
+            let oddRight = new.count%2 != 0
+            let middle = oddRight ? new.count/2 - 1 : new.count/2
+            var isPal = true
+            for i in 0...middle {
+                if new[i] != new[new.count - 1 - i] {
+                    isPal = false
+                    break
+                }
+            }
+            if isPal {
+                maxLength = max(maxLength,new.count)
+            }
+        }
     }
-    
     return maxLength
 }
 
-func compareOdd(left:Int,middle:Int,right:Int) {
-    var l = left
-    var r = right
-    while l < middle {
-        if isEqual(left: l, middle: middle, right: r, isOdd: true) {
-            maxLength = max(maxLength,r-l+1)
-        }
-        l += 1
-        r -= 1
-    }
-}
-
-func compareEven(left:Int,middle:Int,right:Int) {
-    var l = left
-    var r = right
-    while l < middle {
-        if isEqual(left: l, middle: middle, right: r, isOdd: false) {
-            maxLength = max(maxLength,r-l+1)
-        }
-        l += 1
-        r -= 1
-    }
-}
-
-
-func isEqual(left:Int,middle:Int,right:Int,isOdd:Bool) -> Bool {
-    print(left,middle,right,isOdd)
-    var leftStr:ArraySlice<String>!
-    var rightStr:ArraySlice<String>!
-    if isOdd {
-        leftStr = str[left...middle-1]
-        rightStr = str[middle+1...right]
-    }else {
-        leftStr = str[left...middle]
-        rightStr = str[middle+1...right]
-    }
-    return leftStr.joined() == rightStr.reversed().joined()
-}
-
-solution("aabb")
+solution("aaabaa")
