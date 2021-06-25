@@ -1,42 +1,77 @@
-/*
- 가운데 글자 기준으로 앞,뒤가 똑같을때
- 절반이 앞,뒤가 똑같을때
- 
- */
 import Foundation
 
-var str:[String] = []
-var maxLength:Int = 1
 
-func solution(_ s:String) -> Int {
-    str = s.map{String($0)}
+var set:Set<[Int]> = []
+var ban:[[Int]] = []
+var setBan:Set<Int> = []
+var banCount:Int = 0
+
+func solution(_ user_id:[String], _ banned_id:[String]) -> Int {
     
-    if s.count == 2 {
-        return str[0] == str[1] ? 2 : 1
-    }
+    ban = Array(repeating: [Int](), count: banned_id.count)
+    banCount = banned_id.count
     
-    var new:[String] = []
-    for i in 0..<str.count-1 {
-        new = []
-        new.append(str[i])
-        for j in i+1..<str.count {
-            new.append(str[j])
-            if new.count <= maxLength { continue }
-            let oddRight = new.count%2 != 0
-            let middle = oddRight ? new.count/2 - 1 : new.count/2
-            var isPal = true
-            for i in 0...middle {
-                if new[i] != new[new.count - 1 - i] {
-                    isPal = false
-                    break
-                }
-            }
-            if isPal {
-                maxLength = max(maxLength,new.count)
+    for (i,uid) in user_id.enumerated() {
+        for (j,bid) in banned_id.enumerated() {
+            if isEqual(userId: uid, bannedId: bid) {
+                ban[j].append(i)
+                setBan.insert(i)
             }
         }
     }
-    return maxLength
+    
+    permuteWirth(Array(setBan).sorted(), banned_id.count)
+    
+    print(set)
+
+    return set.count
 }
 
-solution("aaabaa")
+func isEqual(userId:String,bannedId:String) -> Bool {
+    if userId.count != bannedId.count { return false }
+    let uid = userId.map{String($0)}
+    let bid = bannedId.map{String($0)}
+    
+    for (i,b) in bid.enumerated() {
+        if b == "*" {
+            continue
+        }else {
+            if uid[i] != bid[i] {
+                return false
+            }
+        }
+    }
+    return true
+}
+
+
+func permuteWirth(_ a: [Int], _ n: Int) {
+    if n == 0 {
+        let new = Array(a[0..<banCount])
+        if isRightCombination(array: new, ban: ban) {
+            set.insert(new.sorted())
+        }
+    } else {
+        var a = a
+        permuteWirth(a, n - 1)
+        for i in 0..<n {
+            a.swapAt(i, n)
+            permuteWirth(a, n - 1)
+            a.swapAt(i, n)
+        }
+    }
+}
+
+func isRightCombination(array:[Int],ban:[[Int]]) -> Bool {
+    for (i,n) in array.enumerated() {
+        if !ban[i].contains(n) {
+            return false
+        }
+    }
+    return true
+}
+
+
+solution(["frodo", "fradi", "crodo", "abc123", "frodoc"],["frodo", "fradi", "crodo", "abc123", "frodoc"])
+
+
