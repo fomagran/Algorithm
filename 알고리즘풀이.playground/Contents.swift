@@ -16,9 +16,12 @@ enum Direction:CaseIterable {
     case right,down,left,up
 }
 
-var dontMove:[String:Bool] = [:]
+var dontMove:[Direction:[[Bool]]] = [:]
 
 func solution(_ board:[[Int]]) -> Int {
+    Direction.allCases.forEach{
+        dontMove[$0] = Array(repeating: Array(repeating: false, count: board.count), count: board.count)
+    }
     return findMinCountByBFS(board: board)
 }
 
@@ -30,19 +33,15 @@ func findMinCountByBFS(board:[[Int]]) -> Int {
         var first = queue.removeFirst()
         let second = current2(current: first)
         
-        first.count += 1
-        
-        dontMove["\(first.x)\(first.y)\(second.x)\(second.y)"] = true
-        dontMove["\(second.x)\(second.y)\(first.x)\(first.y)"] = true
-        
-        for command in allCommand {
-            var newCurrent = move(current: first, command: command)
-            newCurrent.past = command
-            if isEnabled(current:newCurrent,b:board) {
-                let newSecond = current2(current: newCurrent)
-                if (newCurrent.x == board.count-1 && newCurrent.y == board.count-1) || (newSecond.x == board.count-1 && newSecond.y == board.count-1){
-                    return newCurrent.count
-                }
+        if isEnabled(current: first, b: board) {
+            if (first.x == board.count-1 && first.y == board.count-1) || (second.x == board.count-1 && second.y == board.count-1){
+                return first.count
+            }
+            dontMove[first.d]![first.y][first.x] = true
+            first.count += 1
+            for command in allCommand {
+                var newCurrent = move(current: first, command: command)
+                newCurrent.past = command
                 queue.append(newCurrent)
             }
         }
@@ -54,7 +53,7 @@ func move(current:Current,command:Command) -> Current {
     let allDirection = Direction.allCases
     let index = allDirection.firstIndex(of: current.d) ?? -1
     let second = current2(current: current)
-
+    
     var newCurrent = current
     switch command {
     case .up:
@@ -83,9 +82,9 @@ func move(current:Current,command:Command) -> Current {
 
 func isEnabled(current:Current,b:[[Int]]) -> Bool {
     let second = current2(current: current)
-    if dontMove["\(current.x)\(current.y)\(second.x)\(second.y)"] == nil{
-        if 0..<b.count ~= current.x && 0..<b.count ~= current.y && 0..<b.count ~= second.x && 0..<b.count ~= second.y {
-            if b[current.y][current.x] == 0 &&  b[second.y][second.x] == 0 {
+    if 0..<b.count ~= current.x && 0..<b.count ~= current.y && 0..<b.count ~= second.x && 0..<b.count ~= second.y {
+        if b[current.y][current.x] == 0 &&  b[second.y][second.x] == 0 {
+            if !dontMove[current.d]![current.y][current.x] {
                 if current.past == .rotateClockwise || current.past == .rotateClockwise2{
                     switch current.d {
                     case .up:
@@ -132,5 +131,10 @@ func current2(current:Current) -> Current {
     return newCurrent
 }
 
+//solution([[0, 0, 0, 0, 0, 0, 1], [1, 1, 1, 1, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 1, 1, 1, 0], [0, 1, 1, 1, 1, 1, 0], [0, 0, 0, 0, 0, 1, 1], [0, 0, 1, 0, 0, 0, 0]])
 
-solution([[0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 1, 1, 1, 1, 1, 0, 0], [1, 1, 1, 1, 1, 1, 1, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 1, 1, 1, 1, 0, 0], [0, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 1, 1, 1, 1, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 1, 1, 1, 1, 1, 1, 0]])
+solution([[0, 0, 0, 0, 0, 0, 1], [1, 1, 1, 1, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 1, 1, 0, 0], [0, 1, 1, 1, 1, 1, 0], [0, 0, 0, 0, 0, 1, 0], [0, 0, 1, 0, 0, 0, 0]])
+
+//solution([[0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0], [1, 0, 0, 0, 1, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 1, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 1, 0, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+
+solution([[0, 0, 0, 1, 1],[0, 0, 0, 1, 0],[0, 1, 0, 1, 1],[1, 1, 0, 0, 1],[0, 0, 0, 0, 0]])
