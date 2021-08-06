@@ -1,31 +1,25 @@
-func solution(_ gems:[String]) -> [Int] {
-    var gemIndex:[String:[Int]] = [gems.first!:[0]]
-    var firstIndex:Int = 0
-    var lastIndex:Int = 0
-    let allGems = Set(gems)
-    var answer:[Int] = [0,100000]
-
-    while true {
-        if allGems.count == gemIndex.count {
-            answer = (answer[1] - answer[0]) > lastIndex - firstIndex ? [firstIndex+1,lastIndex+1] : answer
-            gemIndex[gems[firstIndex]]!.removeFirst()
-            if gemIndex[gems[firstIndex]]!.isEmpty {
-                gemIndex[gems[firstIndex]] = nil
-            }
-            firstIndex += 1
-        }else {
-            lastIndex += 1
-            if lastIndex == gems.count { return answer }
-            if gemIndex[gems[lastIndex]] == nil {
-                gemIndex[gems[lastIndex]] = [lastIndex]
-            }else {
-                gemIndex[gems[lastIndex]]!.append(lastIndex)
-            }
+func solution(_ n:Int, _ t:Int, _ m:Int, _ timetable:[String]) -> String {
+    var startTime = 540
+    var times:[Int] = timetable.map{Int($0.split(separator: ":")[0])!*60 + Int($0.split(separator: ":")[1])!}.sorted(by:<)
+    var people:Int = 0
+    var last:Int = startTime
+    var hour:String = ""
+    var minute:String = ""
+    
+    for _ in 0..<n {
+        people = m
+        for _ in 0..<m {
+            if times.isEmpty || times.first! > startTime { break }
+            last = times.removeFirst()
+            people -= 1
         }
+        startTime += t
     }
+    
+    startTime = people == 0 ? last-1 : startTime-t
+    hour = startTime/60  < 10 ? "0\(startTime/60)" : "\(startTime/60)"
+    minute = startTime%60 < 10 ? "0\(startTime%60)" : "\(startTime%60)"
+    return hour + ":" + minute
 }
 
-solution(["DIA", "RUBY", "RUBY", "DIA", "DIA", "EMERALD", "SAPPHIRE", "DIA"])
-solution(["AA", "AB", "AC", "AA", "AC"])
-solution(["XYZ", "XYZ", "XYZ"])
-solution(["ZZZ", "YYY", "NNNN", "YYY", "BBB"])
+solution(10, 60, 45, ["23:59","23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59"])
