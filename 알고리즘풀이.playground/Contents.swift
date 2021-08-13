@@ -1,121 +1,107 @@
-import Foundation
-
-var result:[[Int]] = []
 var pillars:[[Bool]] = []
 var papers:[[Bool]] = []
+var pillarLocation:[(Int,Int)] = []
+var paperLocation:[(Int,Int)] = []
 
 func solution(_ n:Int, _ build_frame:[[Int]]) -> [[Int]] {
-    pillars = Array(repeating: Array(repeating: false, count: 4), count: n)
-    papers = Array(repeating: Array(repeating: false, count: 4), count: n)
+    
+    pillars = Array(repeating: Array(repeating: false, count: n+1), count: n+1)
+    papers = Array(repeating: Array(repeating: false, count: n+1), count: n+1)
     
     for frame in build_frame {
+        let x = frame[0]
+        let y = frame[1]
         if frame[3] == 0 {
             if frame[2] == 0 {
-                if isRemovablePillar(x: frame[0], y: frame[1]) {
-                    pillars[frame[1]][frame[0]] = false
+                pillars[x][y] = false
+                if let index = pillarLocation.firstIndex(where: {$0 == (x,y)}) {
+                    pillarLocation.remove(at: index)
+                }
+                if !checkRightStructure(n: n){
+                    pillars[x][y] = true
+                    pillarLocation.append((x,y))
                 }
             }else {
-                if isRemovablePaper(x: frame[0], y: frame[1]) {
-                    papers[frame[1]][frame[0]] = false
+                papers[x][y] = false
+                if let index = paperLocation.firstIndex(where: {$0 == (x,y)}) {
+                    paperLocation.remove(at: index)
+                }
+                if !checkRightStructure(n: n) {
+                    papers[x][y] = true
+                    paperLocation.append((x,y))
                 }
             }
         }else {
             if frame[2] == 0 {
-                if isErectablePillar(x: frame[0], y: frame[1]) {
-                    pillars[frame[1]][frame[0]] = true
+                if checkRightPillars(x:x, y:y) {
+                    pillars[x][y] = true
+                    pillarLocation.append((x,y))
                 }
             }else {
-                if isErectablePaper(x: frame[0], y: frame[1]) {
-                    papers[frame[1]][frame[0]] = true
+                if checkRightPapers(x:x, y:y,n:n) {
+                    papers[x][y] = true
+                    paperLocation.append((x,y))
                 }
             }
         }
     }
-    
-    for (y,pillar) in pillars.enumerated() {
-        for (x,p) in pillar.enumerated() {
-            if p {
-                result.append([x,y,0])
-            }
-        }
+    //result를 조건에 맞게 정렬
+    let result = pillarLocation.map{[$0.0,$0.1,0]} + paperLocation.map{[$0.0,$0.1,1]}
+    return result.sorted { $0[0] == $1[0] ? $0[1] == $1[1] ? $0[2] < $1[2] : $0[1] < $1[1] : $0[0] < $1[0]
     }
-    
-    for (y,paper) in papers.enumerated() {
-        for (x,p) in paper.enumerated() {
-            if p {
-                result.append([x,y,1])
-            }
-        }
-    }
-    
-    result.sort {
-        if $0[0] == $1[0] {
-            if $0[1] == $1[1] {
-                return $0[2] < $1[2]
-            }else {
-                return $0[1] < $1[1]
-            }
-        }else {
-            return $0[0] < $1[0]
-        }
-    }
-    
-    return result
 }
 
-func isErectablePillar(x:Int,y:Int) -> Bool{
-    return pillars[y-1][x] || papers[y][x-1] || papers[y][x] || y == 0
+//기둥과 보의 상태가 모두 적합한지 확인
+    func checkRightStructure(n:Int) -> Bool {
+    for paper in paperLocation {
+        if !checkRightPapers(x: paper.0, y: paper.1,n: n){
+            return false
+        }
+    }
+    for pillar in pillarLocation {
+        if !checkRightPillars(x: pillar.0, y: pillar.1) {
+            return false
+        }
+    }
+    return true
 }
 
-func isErectablePaper(x:Int,y:Int) -> Bool {
-    if pillars[y-1][x] || pillars[y-1][x+1] {
+
+//적합한 기둥의 상태인지 확인
+func checkRightPillars(x:Int,y:Int) -> Bool {
+    //바닥,기둥 위,보의 왼쪽 위일 경우
+    if y == 0 || pillars[x][y-1] || papers[x][y]{
         return true
-    }else {
-        return papers[y][x-1] && papers[y][x+1]
     }
+    //보의 오른쪽 위일 경우
+    if x > 0 {
+        if papers[x-1][y] {
+            return true
+        }
+    }
+    return false
 }
 
-func isRemovablePillar(x:Int,y:Int) -> Bool {
-    
-    if pillars[y+1][x] {
-        return false
+//적합한 보의 상태인지 확인
+func checkRightPapers(x:Int,y:Int,n:Int) -> Bool {
+    //보의 왼쪽이 기둥 위일 경우
+    if pillars[x][y-1] {
+        return true
     }
-   
-    if papers[y+1][x] {
-        if !papers[y+1][x-1] {
-            return false
+    if x < n {
+        //보의 오른쪽이 기둥 위일 경우
+        if pillars[x+1][y-1]{
+            return true
         }
     }
-    
-    if papers[y+1][x-1] {
-        if !papers[y+1][x+1] {
-            return false
+    if x > 0 && x < n {
+        //양쪽에 보가 있을 경우
+        if papers[x-1][y] && papers[x+1][y]{
+            return true
         }
     }
-    
-    return true
-}
-
-func isRemovablePaper(x:Int,y:Int) -> Bool {
-    
-    if papers[y][x+1] || pillars[y][x+1] {
-        return false
-    }
-    
-    if papers[y][x-1]{
-       if  !pillars[y-1][x-1] {
-            return false
-        }
-    }
-    
-    if papers[y][x+1]{
-       if  !pillars[y-1][x+2] {
-            return false
-        }
-    }
-    
-    return true
+    return false
 }
 
 solution(5, [[1,0,0,1],[1,1,1,1],[2,1,0,1],[2,2,1,1],[5,0,0,1],[5,1,0,1],[4,2,1,1],[3,2,1,1]])
-//solution(5, [[0,0,0,1],[2,0,0,1],[4,0,0,1],[0,1,1,1],[1,1,1,1],[2,1,1,1],[3,1,1,1],[2,0,0,0],[1,1,1,0],[2,2,0,1]])
+
