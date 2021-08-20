@@ -1,107 +1,111 @@
-var pillars:[[Bool]] = []
-var papers:[[Bool]] = []
-var pillarLocation:[(Int,Int)] = []
-var paperLocation:[(Int,Int)] = []
+import Foundation
 
-func solution(_ n:Int, _ build_frame:[[Int]]) -> [[Int]] {
-    
-    pillars = Array(repeating: Array(repeating: false, count: n+1), count: n+1)
-    papers = Array(repeating: Array(repeating: false, count: n+1), count: n+1)
-    
-    for frame in build_frame {
-        let x = frame[0]
-        let y = frame[1]
-        if frame[3] == 0 {
-            if frame[2] == 0 {
-                pillars[x][y] = false
-                if let index = pillarLocation.firstIndex(where: {$0 == (x,y)}) {
-                    pillarLocation.remove(at: index)
-                }
-                if !checkRightStructure(n: n){
-                    pillars[x][y] = true
-                    pillarLocation.append((x,y))
-                }
-            }else {
-                papers[x][y] = false
-                if let index = paperLocation.firstIndex(where: {$0 == (x,y)}) {
-                    paperLocation.remove(at: index)
-                }
-                if !checkRightStructure(n: n) {
-                    papers[x][y] = true
-                    paperLocation.append((x,y))
-                }
-            }
-        }else {
-            if frame[2] == 0 {
-                if checkRightPillars(x:x, y:y) {
-                    pillars[x][y] = true
-                    pillarLocation.append((x,y))
-                }
-            }else {
-                if checkRightPapers(x:x, y:y,n:n) {
-                    papers[x][y] = true
-                    paperLocation.append((x,y))
+var boardCopy:[[Int]] = []
+var emptyBlocks:[[(Int,Int)]] = []
+var blocks:[[(Int,Int)]] = []
+var answer:Int = 0
+
+func solution(_ game_board:[[Int]], _ table:[[Int]]) -> Int {
+    boardCopy = game_board
+    findBlocks(isEmpty:true)
+    boardCopy = table.map{$0.map{abs($0-1)}}
+    findBlocks(isEmpty:false)
+    checkEqualBlock()
+    return answer
+}
+
+func findBlocks(isEmpty:Bool) {
+    var check:Bool = true
+    while check {
+        check = false
+        outer:for (y,board) in boardCopy.enumerated() {
+            for (x,n) in board.enumerated() {
+                if n == 0 {
+                    if isEmpty {
+                        emptyBlocks.append([(x,y)])
+                    }else {
+                        blocks.append([(x,y)])
+                    }
+                    boardCopy[y][x] = 1
+                    checkAllDirection(x: x, y: y,isEmpty: isEmpty)
+                    check = true
+                    break outer
                 }
             }
         }
     }
-    //result를 조건에 맞게 정렬
-    let result = pillarLocation.map{[$0.0,$0.1,0]} + paperLocation.map{[$0.0,$0.1,1]}
-    return result.sorted { $0[0] == $1[0] ? $0[1] == $1[1] ? $0[2] < $1[2] : $0[1] < $1[1] : $0[0] < $1[0]
+}
+
+func checkAllDirection(x:Int,y:Int,isEmpty:Bool) {
+    var queue:[(Int,Int)] = [(x,y)]
+    while !queue.isEmpty {
+        let first = queue.removeFirst()
+        let left = (first.0-1,first.1)
+        let right = (first.0+1,first.1)
+        let up = (first.0,first.1-1)
+        let down = (first.0,first.1+1)
+        let new = [left,right,up,down]
+        
+        for d in new {
+            if 0..<boardCopy.count ~= d.0 && 0..<boardCopy.count ~= d.1 {
+                if boardCopy[d.1][d.0] == 0 {
+                    boardCopy[d.1][d.0] = 1
+                    if isEmpty {
+                        emptyBlocks[emptyBlocks.count-1].append(d)
+                    }else {
+                        blocks[blocks.count-1].append(d)
+                    }
+                    queue.append(d)
+                }
+                
+            }
+        }
     }
 }
 
-//기둥과 보의 상태가 모두 적합한지 확인
-    func checkRightStructure(n:Int) -> Bool {
-    for paper in paperLocation {
-        if !checkRightPapers(x: paper.0, y: paper.1,n: n){
-            return false
+func checkEqualBlock() {
+    while !emptyBlocks.isEmpty {
+        let empty = emptyBlocks.removeFirst()
+        outer:for (i,block) in blocks.enumerated() {
+            if block.count != empty.count { continue }
+            let emptySort = sortBlock(block: empty)
+            let rotateBlocks = rotateBlock(block: block)
+            second:for rotateBlock in rotateBlocks {
+                var rotateSort = sortBlock(block: rotateBlock)
+                let x = emptySort.first!.0 - rotateSort.first!.0
+                let y = emptySort.first!.1 - rotateSort.first!.1
+                rotateSort = rotateSort.map{($0.0+x,$0.1+y)}
+                for i in 0..<emptySort.count {
+                    if emptySort[i] != rotateSort[i] {
+                        continue second
+                    }
+                }
+                    blocks.remove(at: i)
+                    answer += empty.count
+                    break outer
+            }
         }
     }
-    for pillar in pillarLocation {
-        if !checkRightPillars(x: pillar.0, y: pillar.1) {
-            return false
-        }
-    }
-    return true
 }
 
-
-//적합한 기둥의 상태인지 확인
-func checkRightPillars(x:Int,y:Int) -> Bool {
-    //바닥,기둥 위,보의 왼쪽 위일 경우
-    if y == 0 || pillars[x][y-1] || papers[x][y]{
-        return true
-    }
-    //보의 오른쪽 위일 경우
-    if x > 0 {
-        if papers[x-1][y] {
-            return true
+func rotateBlock(block:[(Int,Int)]) -> [[(Int,Int)]] {
+    var newBlock = block
+    var rotateBlocks:[[(Int,Int)]] = []
+    
+    for _ in 0..<3 {
+        var rotateBlock:[(Int,Int)] = []
+        for b in newBlock {
+            rotateBlock.append((b.1,-b.0))
         }
+        newBlock = rotateBlock
+        rotateBlocks.append(rotateBlock)
     }
-    return false
+    return rotateBlocks
 }
 
-//적합한 보의 상태인지 확인
-func checkRightPapers(x:Int,y:Int,n:Int) -> Bool {
-    //보의 왼쪽이 기둥 위일 경우
-    if pillars[x][y-1] {
-        return true
-    }
-    if x < n {
-        //보의 오른쪽이 기둥 위일 경우
-        if pillars[x+1][y-1]{
-            return true
-        }
-    }
-    if x > 0 && x < n {
-        //양쪽에 보가 있을 경우
-        if papers[x-1][y] && papers[x+1][y]{
-            return true
-        }
-    }
-    return false
+func sortBlock(block:[(Int,Int)]) -> [(Int,Int)] {
+    let sort:[(Int,Int)] = block.sorted{$0.0 == $1.0 ? $0.1 < $1.1 : $0.0 < $1.0 }
+    return sort
 }
 
-solution(5, [[1,0,0,1],[1,1,1,1],[2,1,0,1],[2,2,1,1],[5,0,0,1],[5,1,0,1],[4,2,1,1],[3,2,1,1]])
-
+solution([[0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0], [1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0], [1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1], [0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0], [0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1], [0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0], [0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0], [1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0], [0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0], [0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1], [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0]], [[1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1], [1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1], [1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0], [0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0], [1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1], [1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1], [0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1], [1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1], [1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1], [1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1]])
