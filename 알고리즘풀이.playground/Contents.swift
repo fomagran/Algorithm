@@ -90,7 +90,7 @@ func checkEqualBlock() {
 
 func rotateBlock(block:[(Int,Int)]) -> [[(Int,Int)]] {
     var newBlock = block
-    var rotateBlocks:[[(Int,Int)]] = []
+    var rotateBlocks:[[(Int,Int)]] = [block]
     
     for _ in 0..<3 {
         var rotateBlock:[(Int,Int)] = []
