@@ -1,111 +1,93 @@
 import Foundation
 
-var boardCopy:[[Int]] = []
-var emptyBlocks:[[(Int,Int)]] = []
-var blocks:[[(Int,Int)]] = []
-var answer:Int = 0
+var answer:Set<[[Bool]]> = []
+var b:[[Bool]] = []
 
-func solution(_ game_board:[[Int]], _ table:[[Int]]) -> Int {
-    boardCopy = game_board
-    findBlocks(isEmpty:true)
-    boardCopy = table.map{$0.map{abs($0-1)}}
-    findBlocks(isEmpty:false)
-    checkEqualBlock()
-    return answer
+func solution(_ n:Int) -> Int {
+    if n == 1 { return 1 }
+    b = Array(repeating: Array(repeating: true, count: n), count: n)
+    for (y,row) in b.enumerated() {
+        for (x,column) in row.enumerated() {
+            if column {
+                let newBoard = makeVisitPlace(board: b, x: x, y: y)
+                var history = Array(repeating: Array(repeating: true, count: n), count: n)
+                history[y][x] = false
+                findEnablePlace(n: n, depth: 1, board: newBoard,history:history)
+            }
+        }
+    }
+    return answer.count
 }
 
-func findBlocks(isEmpty:Bool) {
-    var check:Bool = true
-    while check {
-        check = false
-        outer:for (y,board) in boardCopy.enumerated() {
-            for (x,n) in board.enumerated() {
-                if n == 0 {
-                    if isEmpty {
-                        emptyBlocks.append([(x,y)])
-                    }else {
-                        blocks.append([(x,y)])
-                    }
-                    boardCopy[y][x] = 1
-                    checkAllDirection(x: x, y: y,isEmpty: isEmpty)
-                    check = true
-                    break outer
+func findEnablePlace(n:Int,depth:Int,board:[[Bool]],history:[[Bool]]) {
+    if depth == n-1 {
+        for (y,row) in board.enumerated() {
+            for (x,column) in row.enumerated() {
+                if column {
+                    var newHistory = history
+                    newHistory[y][x] = false
+                    b = newHistory
+                    answer.insert(newHistory)
                 }
+            }
+        }
+        return
+    }
+    for (y,row) in board.enumerated() {
+        for (x,column) in row.enumerated() {
+            if column {
+                var newHistory = history
+                newHistory[y][x] = false
+                let newBoard = makeVisitPlace(board: board, x: x, y: y)
+                findEnablePlace(n: n, depth: depth+1, board: newBoard,history: newHistory)
             }
         }
     }
 }
 
-func checkAllDirection(x:Int,y:Int,isEmpty:Bool) {
-    var queue:[(Int,Int)] = [(x,y)]
-    while !queue.isEmpty {
-        let first = queue.removeFirst()
-        let left = (first.0-1,first.1)
-        let right = (first.0+1,first.1)
-        let up = (first.0,first.1-1)
-        let down = (first.0,first.1+1)
-        let new = [left,right,up,down]
-        
-        for d in new {
-            if 0..<boardCopy.count ~= d.0 && 0..<boardCopy.count ~= d.1 {
-                if boardCopy[d.1][d.0] == 0 {
-                    boardCopy[d.1][d.0] = 1
-                    if isEmpty {
-                        emptyBlocks[emptyBlocks.count-1].append(d)
-                    }else {
-                        blocks[blocks.count-1].append(d)
-                    }
-                    queue.append(d)
-                }
-                
-            }
-        }
-    }
-}
-
-func checkEqualBlock() {
-    while !emptyBlocks.isEmpty {
-        let empty = emptyBlocks.removeFirst()
-        outer:for (i,block) in blocks.enumerated() {
-            if block.count != empty.count { continue }
-            let emptySort = sortBlock(block: empty)
-            let rotateBlocks = rotateBlock(block: block)
-            second:for rotateBlock in rotateBlocks {
-                var rotateSort = sortBlock(block: rotateBlock)
-                let x = emptySort.first!.0 - rotateSort.first!.0
-                let y = emptySort.first!.1 - rotateSort.first!.1
-                rotateSort = rotateSort.map{($0.0+x,$0.1+y)}
-                for i in 0..<emptySort.count {
-                    if emptySort[i] != rotateSort[i] {
-                        continue second
-                    }
-                }
-                    blocks.remove(at: i)
-                    answer += empty.count
-                    break outer
-            }
-        }
-    }
-}
-
-func rotateBlock(block:[(Int,Int)]) -> [[(Int,Int)]] {
-    var newBlock = block
-    var rotateBlocks:[[(Int,Int)]] = [block]
+func makeVisitPlace(board:[[Bool]],x:Int,y:Int) -> [[Bool]] {
+    var newBoard = board
     
-    for _ in 0..<3 {
-        var rotateBlock:[(Int,Int)] = []
-        for b in newBlock {
-            rotateBlock.append((b.1,-b.0))
-        }
-        newBlock = rotateBlock
-        rotateBlocks.append(rotateBlock)
+    newBoard[y] = Array(repeating:false, count:board.count)
+    
+    for i in 0..<board.count {
+        newBoard[i][x] = false
     }
-    return rotateBlocks
+    
+    var newX1 = x
+    var newX2 = x
+    
+    if y < board.count - 1 {
+        for i in y+1..<board.count {
+            if newX1 > 0 {
+                newX1 -= 1
+                newBoard[i][newX1] = false
+            }
+            
+            if newX2 < board.count - 1 {
+                newX2 += 1
+                newBoard[i][newX2] = false
+            }
+        }
+    }
+    
+    newX1 = x
+    newX2 = x
+    
+    if y > 0 {
+        for i in stride(from: y-1, through: 0, by: -1) {
+            if newX1 > 0 {
+                newX1 -= 1
+                newBoard[i][newX1] = false
+            }
+            
+            if newX2 < board.count-1 {
+                newX2 += 1
+                newBoard[i][newX2] = false
+            }
+        }
+    }
+    return newBoard
 }
 
-func sortBlock(block:[(Int,Int)]) -> [(Int,Int)] {
-    let sort:[(Int,Int)] = block.sorted{$0.0 == $1.0 ? $0.1 < $1.1 : $0.0 < $1.0 }
-    return sort
-}
-
-solution([[0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0], [1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0], [1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1], [0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0], [0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1], [0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0], [0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0], [1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0], [0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0], [0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1], [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0]], [[1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1], [1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1], [1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0], [0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0], [1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1], [1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1], [0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1], [1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1], [1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1], [1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1]])
+solution(6)
