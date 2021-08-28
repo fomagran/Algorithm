@@ -1,89 +1,47 @@
 import Foundation
 
-var answer:Int = 0
-
 func solution(_ n:Int) -> Int {
-    if n == 1 { return 1 }
-    let board = Array(repeating: Array(repeating: true, count: n), count: n)
-        for (x,column) in board[0].enumerated() {
-            if column {
-                var history = Array(repeating: Array(repeating: true, count: n), count: n)
-                history[0][x] = false
-                findEnablePlace(n: n, depth: 1,history:history)
-            }
-        }
+    //가능한 배치 수
+    var answer:Int = 0
+    //퀸이 놓인 위치를 기억할 2차원 배열
+    let history = Array(repeating: Array(repeating: true, count: n), count: n)
+    //가능한 배치를 찾는다
+    findEnableArrange(n: n, depth: 0,history:history,answer:&answer)
     return answer
 }
 
-func findEnablePlace(n:Int,depth:Int,history:[[Bool]]) {
-    if depth == n-1 {
-        for i in 0..<n {
-            if isEnable(history: history, x: i, y: depth) {
-                answer += 1
-            }
-        }
+func findEnableArrange(n:Int,depth:Int,history:[[Bool]],answer:inout Int) {
+    //가장 마지막까지 왔을 경우
+    if depth == n {
+        //배치 가능한 것이므로 +1 해줌
+        answer += 1
         return
     }
-    
+    //현재 행에 퀸을 놓을 수 있는지 확인
     for x in 0..<n {
-        if isEnable(history: history, x: x, y:depth) {
+        //공격하지 못한다면
+        if isUnableAttack(history: history, x: x, y:depth) {
             var newHistory = history
             newHistory[depth][x] = false
-            findEnablePlace(n: n, depth: depth+1,history: newHistory)
+            //dfs로 진행
+            findEnableArrange(n: n, depth: depth+1,history: newHistory,answer: &answer)
         }
     }
-
 }
-
-func isEnable(history:[[Bool]],x:Int,y:Int) -> Bool {
+//공격이 불가능한지 체크한다
+func isUnableAttack(history:[[Bool]],x:Int,y:Int) -> Bool {
     for i in 0..<history.count {
-        if !history[i][x] {
+        //세로 확인
+        if !history[i][x]  {
+            return false
+        //대각선으로 왼쪽 확인
+        }else if 0..<history.count ~= x-abs(y-i) && !history[i][x-abs(y-i)] {
+            return false
+        //대각선으로 오른쪽 확인
+        }else if 0..<history.count ~= x+abs(y-i) && !history[i][x+abs(y-i)] {
             return false
         }
     }
-
-    var newX1 = x
-    var newX2 = x
-
-    if y < history.count - 1 {
-        for i in y+1..<history.count {
-            if newX1 > 0 {
-                newX1 -= 1
-                if !history[i][newX1] {
-                    return false
-                }
-            }
-
-            if newX2 < history.count - 1 {
-                newX2 += 1
-                if !history[i][newX2] {
-                    return false
-                }
-            }
-        }
-    }
-
-    newX1 = x
-    newX2 = x
-
-    if y > 0 {
-        for i in stride(from: y-1, through: 0, by: -1) {
-            if newX1 > 0 {
-                newX1 -= 1
-                if !history[i][newX1] {
-                    return false
-                }
-            }
-
-            if newX2 < history.count-1 {
-                newX2 += 1
-                if !history[i][newX2] {
-                    return false
-                }
-            }
-        }
-    }
-
     return true
 }
 
