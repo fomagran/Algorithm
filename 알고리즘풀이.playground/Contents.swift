@@ -3,9 +3,9 @@ import Foundation
 struct Page {
     var index:Int
     var url:String
-    var score:Float
+    var score:Double
     var externalLinks:[String]
-    var linkScore:Float
+    var linkScore:Double
 }
 
 func solution(_ word:String, _ pages:[String]) -> Int {
@@ -15,7 +15,7 @@ func solution(_ word:String, _ pages:[String]) -> Int {
         var pageInfo = Page(index:i,url: "", score: 0, externalLinks: [], linkScore: 0)
        let tags = page.split(separator: "<")
         var linkCount = 0
-        var score:Float = -1
+        var score:Double = -1
   
 
         for tag in tags {
@@ -42,7 +42,7 @@ func solution(_ word:String, _ pages:[String]) -> Int {
                 let contains = tag.split(separator: " ").filter{$0.lowercased().contains(word.lowercased())}
                 for contain in contains {
                     let new = contain.map{$0.isLetter ? String($0.lowercased()) : " "}.joined().split(separator: " ")
-                   score += Float(new.filter{$0 == word.lowercased()}.count)
+                   score += Double(new.filter{$0 == word.lowercased()}.count)
                 }
             }
         }
@@ -53,7 +53,7 @@ func solution(_ word:String, _ pages:[String]) -> Int {
         for link in pageInfo.externalLinks {
             let index = pageInfos.firstIndex{$0.url == link}
             if let index = index {
-            let linkScore:Float = pageInfo.score/Float(pageInfo.externalLinks.count)
+            let linkScore:Double = pageInfo.score/Double(pageInfo.externalLinks.count)
             pageInfos[index].linkScore += linkScore
             }
         }
