@@ -1,75 +1,67 @@
 import Foundation
 
-struct Page {
-    var index:Int
-    var url:String
-    var score:Double
-    var externalLinks:[String]
-    var linkScore:Double
+struct Boxer {
+    let index:Int
+    let weight:Int
+    let winRate:Double
+    let moreWeightsWinCount:Int
 }
 
-func solution(_ word:String, _ pages:[String]) -> Int {
-    
-    var pageInfos:[Page] = []
-    for (i,page) in pages.enumerated() {
-        var pageInfo = Page(index:i,url: "", score: 0, externalLinks: [], linkScore: 0)
-       let tags = page.split(separator: "<")
-        var linkCount = 0
-        var score:Double = -1
-  
+func solution(_ weights:[Int], _ head2head:[String]) -> [Int] {
+    var moreWeightsWinCount:[Int] = Array(repeating: 0, count: weights.count)
+    let fights:[[String]] = setFightsHistory(moreWeightsWinCount: &moreWeightsWinCount, head2head, weights: weights)
+    let boxers = makeBoxers(weights: weights, fights: fights, moreWeightsWinCount: moreWeightsWinCount)
+    return sortBoxersIndex(boxers: boxers)
+}
 
-        for tag in tags {
-            if String(tag.prefix(6)) == "meta p" {
-                let content = tag.split(separator: " ").last!
-                let url = content.split(separator: "\"")[1]
-                pageInfo.url = String(url)
-            }
-            if String(tag.prefix(5)) == "/body" {
-                pageInfo.score = score
-                break
-            }
-            if String(tag.prefix(6)) == "a href" {
-                let url = tag.split(separator: "\"")[1]
-                pageInfo.externalLinks.append(String(url))
-                linkCount += 1
-            }
-            
-            if String(tag.prefix(4)) == "body" {
-                score += 1
-            }
-            
-            if score > -1 {
-                let contains = tag.split(separator: " ").filter{$0.lowercased().contains(word.lowercased())}
-                for contain in contains {
-                    let new = contain.map{$0.isLetter ? String($0.lowercased()) : " "}.joined().split(separator: " ")
-                   score += Double(new.filter{$0 == word.lowercased()}.count)
+func setFightsHistory(moreWeightsWinCount:inout [Int],_ head2head:[String],weights:[Int]) -> [[String]] {
+    var fights:[[String]] = Array(repeating: [String](), count: weights.count)
+    for (i,head) in head2head.enumerated() {
+       let map = head.map{String($0)}
+        for (j,m) in map.enumerated() {
+            if m == "W" {
+                fights[i].append("W")
+                if weights[i] < weights[j] {
+                    moreWeightsWinCount[i] += 1
                 }
             }
-        }
-        pageInfos.append(pageInfo)
-    }
-    
-    for pageInfo in pageInfos {
-        for link in pageInfo.externalLinks {
-            let index = pageInfos.firstIndex{$0.url == link}
-            if let index = index {
-            let linkScore:Double = pageInfo.score/Double(pageInfo.externalLinks.count)
-            pageInfos[index].linkScore += linkScore
+            if m == "L" {
+                fights[i].append("L")
             }
         }
     }
-    
-    let max = pageInfos.sorted{($0.score + $0.linkScore) > ($1.score + $1.linkScore)}.first
-
-    let maxScore = max!.score + max!.linkScore
-    
-    for pageInfo in pageInfos {
-        if pageInfo.score + pageInfo.linkScore == maxScore {
-            return pageInfo.index
-        }
-    }
-    
-    return 0
+    return fights
 }
 
-solution("Muzi", ["<html lang=\"ko\" xml:lang=\"ko\" xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta property=\"og:url\" content=\"https://careers.kakao.com/interview/list\"/>\n</head>  \n<body>\n<a href=\"https://programmers.co.kr/learn/courses/4673\"></a>#!MuziMuzi!)jayg07con&&\n\n</body>\n</html>", "<html lang=\"ko\" xml:lang=\"ko\" xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta property=\"og:url\" content=\"https://www.kakaocorp.com\"/>\n</head>  \n<body>\ncon%\tmuzI92apeach&2<a href=\"https://hashcode.co.kr/tos\"></a>\n\n\t^\n</body>\n</html>"])
+func makeBoxers(weights:[Int],fights:[[String]],moreWeightsWinCount:[Int]) -> [Boxer] {
+    var boxers:[Boxer] = []
+    for (i,w) in weights.enumerated() {
+        var winRate:Double = 0
+        if fights[i].filter({$0 == "W"}).count > 0 && fights[i].count > 0 {
+            winRate = Double(fights[i].filter{$0 == "W"}.count)/Double(fights[i].count)
+        }
+        let boxer = Boxer(index:i+1,weight: w, winRate: winRate, moreWeightsWinCount: moreWeightsWinCount[i])
+        boxers.append(boxer)
+    }
+    return boxers
+}
+
+func sortBoxersIndex(boxers:[Boxer]) -> [Int] {
+    return boxers.sorted{
+        if $0.winRate == $1.winRate {
+            if $0.moreWeightsWinCount == $1.moreWeightsWinCount {
+                if $0.weight ==  $1.weight {
+                    return $0.index < $1.index
+                }else {
+                    return $0.weight > $1.weight
+                }
+            }else {
+                return $0.moreWeightsWinCount > $1.moreWeightsWinCount
+            }
+        }else {
+            return $0.winRate > $1.winRate
+        }
+    }.map{$0.index}
+}
+
+solution([50,82,75,120], ["NWWW","LNLL","LWNW","LWLN"])
