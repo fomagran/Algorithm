@@ -1,67 +1,53 @@
 import Foundation
 
-struct Boxer {
-    let index:Int
-    let weight:Int
-    let winRate:Double
-    let moreWeightsWinCount:Int
+struct Weak {
+    let dist:[Int]
+    let weak:[Int]
+    let current:Int
+    let count:Int
 }
 
-func solution(_ weights:[Int], _ head2head:[String]) -> [Int] {
-    var moreWeightsWinCount:[Int] = Array(repeating: 0, count: weights.count)
-    let fights:[[String]] = setFightsHistory(moreWeightsWinCount: &moreWeightsWinCount, head2head, weights: weights)
-    let boxers = makeBoxers(weights: weights, fights: fights, moreWeightsWinCount: moreWeightsWinCount)
-    return sortBoxersIndex(boxers: boxers)
+var answer:Int = Int.max
+var distCount:Int = 0
+var N:Int = 0
+
+func solution(_ n:Int, _ weak:[Int], _ dist:[Int]) -> Int {
+    distCount = dist.count
+    N = n
+    var reverseDist = Array(dist.reversed())
+    let first = reverseDist.removeFirst()
+    dfs(w: Weak(dist: reverseDist, weak: weak, current: first, count: 0))
+    return answer == Int.max ? -1 : answer
 }
 
-func setFightsHistory(moreWeightsWinCount:inout [Int],_ head2head:[String],weights:[Int]) -> [[String]] {
-    var fights:[[String]] = Array(repeating: [String](), count: weights.count)
-    for (i,head) in head2head.enumerated() {
-       let map = head.map{String($0)}
-        for (j,m) in map.enumerated() {
-            if m == "W" {
-                fights[i].append("W")
-                if weights[i] < weights[j] {
-                    moreWeightsWinCount[i] += 1
-                }
-            }
-            if m == "L" {
-                fights[i].append("L")
-            }
-        }
+func dfs(w:Weak) {
+    if w.count >= answer { return }
+    if w.dist.isEmpty { return }
+    if w.weak.isEmpty {
+        answer = min(answer,w.count+1)
+        return
     }
-    return fights
-}
-
-func makeBoxers(weights:[Int],fights:[[String]],moreWeightsWinCount:[Int]) -> [Boxer] {
-    var boxers:[Boxer] = []
-    for (i,w) in weights.enumerated() {
-        var winRate:Double = 0
-        if fights[i].filter({$0 == "W"}).count > 0 && fights[i].count > 0 {
-            winRate = Double(fights[i].filter{$0 == "W"}.count)/Double(fights[i].count)
-        }
-        let boxer = Boxer(index:i+1,weight: w, winRate: winRate, moreWeightsWinCount: moreWeightsWinCount[i])
-        boxers.append(boxer)
-    }
-    return boxers
-}
-
-func sortBoxersIndex(boxers:[Boxer]) -> [Int] {
-    return boxers.sorted{
-        if $0.winRate == $1.winRate {
-            if $0.moreWeightsWinCount == $1.moreWeightsWinCount {
-                if $0.weight ==  $1.weight {
-                    return $0.index < $1.index
-                }else {
-                    return $0.weight > $1.weight
-                }
-            }else {
-                return $0.moreWeightsWinCount > $1.moreWeightsWinCount
-            }
+    var newDist = w.dist
+    let dist = newDist.removeFirst()
+    
+    for n in w.weak {
+        var filterClock:[Int] = []
+        if n < (n+w.current)%N {
+            filterClock = w.weak.filter{$0 < n || (n+w.current)%N+1...N ~= $0 }
         }else {
-            return $0.winRate > $1.winRate
+            filterClock = w.weak.filter{(n+w.current)%N+1..<n ~= $0 }
         }
-    }.map{$0.index}
+        dfs(w: Weak(dist: newDist, weak: filterClock, current: dist, count: w.count + 1))
+        var filterAntiClock:[Int] = []
+        let other = (N+(n-w.current))%N
+        if n > (N+(n-w.current))%N {
+            filterAntiClock = w.weak.filter{$0 < other || n+1...N ~= $0 }
+        }else {
+            filterAntiClock = w.weak.filter{ n+1..<other ~= $0 }
+        }
+        dfs(w: Weak(dist: newDist, weak: filterAntiClock, current: dist, count: w.count + 1))
+    }
 }
 
-solution([50,82,75,120], ["NWWW","LNLL","LWNW","LWLN"])
+solution(12,[1, 3, 4, 9, 10],[3, 5, 7])
+//solution(12,[1, 5, 6, 10],[1,2,3,4])
