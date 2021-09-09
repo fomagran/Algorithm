@@ -1,21 +1,28 @@
 import Foundation
 
-func solution(_ n:Int, _ weak:[Int], _ dist:[Int]) -> Int {
-    var weaks:[Set<[Int]>] = [[weak]]
-    for (friendCount,d) in dist.reversed().enumerated() {
-        var newWeaks:Set<[Int]> = []
-        for w in weaks.first! {
-            for start in w {
-                let end = (n+(start-d))%n
-                let filterWeaks = start > end ? w.filter{$0 < end || start+1...n ~= $0 } : w.filter{ start+1..<end ~= $0 }
-                if filterWeaks.isEmpty { return friendCount+1 }
-                newWeaks.insert(filterWeaks)
-            }
+func solution(_ n:Int, _ stations:[Int], _ w:Int) -> Int{
+    let W = w*2+1
+    var baseStationCount:Int = n/W
+    var remainder:Int = n%W
+    var gap = 0
+    
+    for station in stations {
+        if station/W == 0 {
+            baseStationCount -= 1
+            continue
         }
-        weaks[0] = newWeaks
+        let end = W * (station/W + 1)
+        let middle = end-2
+        if n - remainder < middle {
+            remainder += -W
+        }else {
+            remainder +=  middle - station
+        }
     }
-    return -1
+    
+    let plusOrMinus:Int = remainder > 0 ? 1 : 0
+        
+    return baseStationCount + remainder/W + plusOrMinus
 }
 
-//solution(12,[1, 5, 6, 10],[1,2,3,4])
-solution(12,[1, 3, 4, 9, 10],[3, 5, 7])
+solution(16, [9], 2)
