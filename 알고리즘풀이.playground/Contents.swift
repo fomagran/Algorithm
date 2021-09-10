@@ -2,27 +2,26 @@ import Foundation
 
 func solution(_ n:Int, _ stations:[Int], _ w:Int) -> Int{
     let W = w*2+1
-    var baseStationCount:Int = n/W
-    var remainder:Int = n%W
-    var gap = 0
-    
+    var baseStationCount:Int = 0
+    var start:Int = 1
     for station in stations {
-        if station/W == 0 {
-            baseStationCount -= 1
+        let end = station-(w+1)
+        if end <= 0 {
+            start = station + w + 1
             continue
         }
-        let end = W * (station/W + 1)
-        let middle = end-2
-        if n - remainder < middle {
-            remainder += -W
-        }else {
-            remainder +=  middle - station
-        }
+        baseStationCount += Int(ceil(Double(end - start + 1)/Double(W)))
+        start = station + w + 1
     }
-    
-    let plusOrMinus:Int = remainder > 0 ? 1 : 0
-        
-    return baseStationCount + remainder/W + plusOrMinus
+    if start <= n {
+        baseStationCount += Int(ceil(Double(n - start + 1)/Double(W)))
+    }
+    return baseStationCount
 }
 
+solution(11, [4,11], 1)
 solution(16, [9], 2)
+solution(19, [2,6,10,14,18], 1)
+solution(19, [2,4,6,11,13], 1)
+
+
