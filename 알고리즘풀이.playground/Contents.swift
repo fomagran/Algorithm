@@ -1,32 +1,22 @@
-/*
- 자식:부모 딕셔너리 만들어서 정보 저장
- 판매자:금액 딕셔너리
- enroll 이름순대로 result 반환
- */
-
-import Foundation
-
-func solution(_ enroll:[String], _ referral:[String], _ seller:[String], _ amount:[Int]) -> [Int] {
-    var parentDic:[String:String] = [:]
-    var profitDic:[String:Int] = [:]
+func solution(_ enter:[Int], _ leave:[Int]) -> [Int] {
+    var enterCopy:[Int] = enter
+    var answers:[[Int]] = Array(repeating: [Int](), count: enter.count)
+    var lastIndex:Int = 0
     
-    for i in 0..<enroll.count {
-        profitDic[enroll[i]] = 0
-        parentDic[enroll[i]] = referral[i]
-    }
-    
-    for i in 0..<seller.count {
-        var tenPercent:Int = amount[i]*100
-        var parent:String = seller[i]
-        while parent != "-" && tenPercent > 0 {
-            profitDic[parent]! += tenPercent - tenPercent/10
-            parent = parentDic[parent]!
-            tenPercent = tenPercent/10
+    for n in leave {
+        let index = enterCopy.firstIndex(of: n)!
+        if index >= lastIndex {
+            let nums = Array(enterCopy[0...index])
+            for i in 0...index {
+                answers[enterCopy[i]-1].append(contentsOf: nums)
+            }
+            lastIndex = index
         }
+        lastIndex = lastIndex == 0 ? lastIndex : lastIndex-1
+        enterCopy.remove(at: index)
     }
-    return enroll.map{profitDic[$0]!}
+    return answers.map{Set($0).count-1}
 }
 
-solution(["john", "mary", "edward", "sam", "emily", "jaimie", "tod", "young"], ["-", "-", "mary", "edward", "mary", "mary", "jaimie", "edward"], ["young", "john", "tod", "emily", "mary"], [12, 4, 2, 5, 10])
-
-solution(["john", "mary", "edward", "sam", "emily", "jaimie", "tod", "young"], ["-", "-", "mary", "edward", "mary", "mary", "jaimie", "edward"], ["sam", "emily", "jaimie", "edward"], [2, 3, 5, 4])
+solution([1,3,2], [1,2,3])
+solution([1,4,2,3],[2,1,4,3])
