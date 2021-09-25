@@ -39,5 +39,5 @@ func solution(_ grid:[String]) -> [Int] {
 }
 
 solution(["SL","LR"])
-//solution(["S"])
-//solution(["R","R"])
+solution(["S"])
+solution(["R","R"])
