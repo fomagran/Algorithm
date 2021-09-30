@@ -1,26 +1,10 @@
 import Foundation
 
-let numbers = [82,10,9,72,31,45,60]
-
-func insertionSort(nums:[Int],startIndex:Int) -> [Int] {
-    print(nums)
-    if startIndex == nums.count {
-        return nums
-    }
-    var x = startIndex-1
-    var newNums = nums
-    let current = newNums.remove(at: startIndex)
-    
-    while x >= 0 {
-        if current >= nums[x] {
-            newNums.insert(current, at: x+1)
-            return insertionSort(nums:newNums,startIndex: startIndex+1)
-        }
-        x -= 1
-    }
-    
-    newNums.insert(current, at: 0)
-    return insertionSort(nums:newNums,startIndex: startIndex+1)
+func solution(_ sizes:[[Int]]) -> Int {
+    let sorted = sizes.map{$0.sorted()}
+    return sorted.map{$0[0]}.max()! * sorted.map{$0[1]}.max()!
 }
 
-insertionSort(nums: numbers, startIndex: 1)
+solution([[60, 50], [30, 70], [60, 30], [80, 40]])
+solution([[10, 7], [12, 3], [8, 15], [14, 7], [5, 15]])
+solution([[14, 4], [19, 6], [6, 16], [18, 7], [7, 11]]    )
