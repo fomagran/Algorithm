@@ -24,6 +24,7 @@
 		0469628425A6D5D700E41102 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0469628725A6D5D700E41102 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0469628925A6D5D700E41102 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		04A7BE5127182F09009324F8 /* MergeSort.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MergeSort.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		04D6FCC42702C3780019ECA9 /* InsertionSort.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = InsertionSort.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		04E24FFE25EE6AFA00ECB835 /* 알고리즘풀이.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = "알고리즘풀이.playground"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 /* End PBXFileReference section */
@@ -75,6 +76,7 @@
 			isa = PBXGroup;
 			children = (
 				04D6FCC42702C3780019ECA9 /* InsertionSort.playground */,
+				04A7BE5127182F09009324F8 /* MergeSort.playground */,
 			);
 			path = Sort;
 			sourceTree = "<group>";
