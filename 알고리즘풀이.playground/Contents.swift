@@ -5,11 +5,8 @@ func solution(_ s:[String]) -> [String] {
     for str in s {
         let remove = remove110(str: str)
         var new = remove.0
-        
         let index = findLast0(str: new)
-        for _ in 0..<remove.1 {
-            new.insert("110", at: index)
-        }
+        new.insert(remove.1, at: index)
         answers.append(new.joined())
     }
     return answers
@@ -24,24 +21,22 @@ func findLast0(str:[String]) -> Int {
     return 0
 }
 
-func remove110(str:String) -> ([String],Int) {
-    let map = str.map{String($0)}
-    var count:Int = 0
+func remove110(str:String) -> ([String],String) {
     var stack:[String] = []
+    var add:String = ""
     
-    for i in 0..<map.count {
-        stack.append(map[i])
-        if stack.count >= 3 {
-            if stack[stack.count-3...stack.count-1] == ["1","1","0"] {
+    for s in str {
+        if s == "0" && stack.count >= 2 {
+            if stack[stack.count-2] == "1" && stack[stack.count-1] == "1" {
                 stack.removeLast()
                 stack.removeLast()
-                stack.removeLast()
-                count += 1
+                add += "110"
+                continue
             }
         }
+        stack.append(String(s))
     }
-
-    return (stack,count)
+    return (stack,add)
 }
 
 solution(["1110","100111100","0111111010"])
