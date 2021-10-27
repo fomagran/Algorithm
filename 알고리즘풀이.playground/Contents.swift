@@ -1,15 +1,15 @@
 import Foundation
 
 func solution(_ s:[String]) -> [String] {
-    var answers:[String] = []
-    for str in s {
-        let remove = remove110(str: str)
-        var new = remove.0
-        let index = findLast0(str: new)
-        new.insert(remove.1, at: index)
-        answers.append(new.joined())
-    }
-    return answers
+    return s.map{add110ToRemoveString(str: $0)}
+}
+
+func add110ToRemoveString(str:String) -> String {
+    var add:String = ""
+    var removeString = remove110(str: str,add: &add)
+    let index = findLast0(str: removeString)
+    removeString.insert(add, at: index)
+    return removeString.joined()
 }
 
 func findLast0(str:[String]) -> Int {
@@ -21,22 +21,18 @@ func findLast0(str:[String]) -> Int {
     return 0
 }
 
-func remove110(str:String) -> ([String],String) {
+func remove110(str:String,add:inout String) -> [String] {
     var stack:[String] = []
-    var add:String = ""
-    
     for s in str {
-        if s == "0" && stack.count >= 2 {
-            if stack[stack.count-2] == "1" && stack[stack.count-1] == "1" {
-                stack.removeLast()
-                stack.removeLast()
-                add += "110"
-                continue
-            }
+        if stack.count >= 2 && stack[stack.count-2] == "1" && stack[stack.count-1] == "1" && s == "0" {
+            stack.removeLast()
+            stack.removeLast()
+            add += "110"
+            continue
         }
         stack.append(String(s))
     }
-    return (stack,add)
+    return stack
 }
 
 solution(["1110","100111100","0111111010"])
