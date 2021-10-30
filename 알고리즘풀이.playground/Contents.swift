@@ -1,38 +1,37 @@
 import Foundation
 
-func solution(_ s:[String]) -> [String] {
-    return s.map{add110ToRemoveString(str: $0)}
+struct Pillar {
+    var current:[[Int]]
+    var history:[[Int]]
 }
 
-func add110ToRemoveString(str:String) -> String {
-    var add:String = ""
-    var removeString = remove110(str: str,add: &add)
-    let index = findLast0(str: removeString)
-    removeString.insert(add, at: index)
-    return removeString.joined()
-}
-
-func findLast0(str:[String]) -> Int {
-    for i in stride(from: str.count-1, through: 0, by: -1) {
-        if str[i] == "0" {
-            return i+1
+func solution(_ n:Int) -> [[Int]] {
+    var pillars:[[Int]] =  Array(repeating: [], count: 3)
+    pillars[0].append(contentsOf:(1...n).reversed().map{$0})
+    let first = Pillar(current: pillars ,history: [])
+    var queue:[Pillar] = [first]
+    var answer:[[Int]] = []
+    
+    while !queue.isEmpty {
+        let pillar = queue.removeFirst()
+        if pillar.current[2].count == n {
+            answer = pillar.history
+            break
+        }
+        for i in 0..<3 {
+            for j in 0..<3 {
+                let lastHistory = pillar.history.last ?? []
+                if pillar.current[i].last ?? 16 < pillar.current[j].last ?? 16 && lastHistory != [j+1,i+1] {
+                    var newPillar = pillar
+                    let last = newPillar.current[i].removeLast()
+                    newPillar.current[j].append(last)
+                    newPillar.history.append([i+1,j+1])
+                    queue.append(newPillar)
+                }
+            }
         }
     }
-    return 0
+    return answer
 }
 
-func remove110(str:String,add:inout String) -> [String] {
-    var stack:[String] = []
-    for s in str {
-        if stack.count >= 2 && stack[stack.count-2] == "1" && stack[stack.count-1] == "1" && s == "0" {
-            stack.removeLast()
-            stack.removeLast()
-            add += "110"
-            continue
-        }
-        stack.append(String(s))
-    }
-    return stack
-}
-
-solution(["1110","100111100","0111111010"])
+solution(3)
