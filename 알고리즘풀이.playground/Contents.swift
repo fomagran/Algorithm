@@ -1,8 +1,9 @@
 func solution(_ a:[Int]) -> Int {
-    if a.count == 1 { return 0}
+    return findMaxLength(a: a)
+}
 
+func countNumbers(a:[Int]) -> [Int:Int] {
     var countDic:[Int:Int] = [:]
-    var answer:Int = 0
     for n in a {
         if countDic[n] == nil {
             countDic[n] = 1
@@ -10,39 +11,44 @@ func solution(_ a:[Int]) -> Int {
             countDic[n]! += 1
         }
     }
-
-    for dic in countDic.sorted(by: {$0.value > $1.value}) {
-        if dic.value * 2 < answer { continue }
-        let length = findLongSubsequence(m:dic.key, a:a)
-        answer = max(answer,length)
-    }
-    
-    return answer
+    return countDic
 }
 
-func findLongSubsequence(m:Int,a:[Int]) -> Int {
+func findLongSubsequence(n:Int,a:[Int]) -> Int {
     var numbers = a
     var length:Int = 0
-    if a[0] == m && a[1] != m {
+    if a[0] == n && a[1] != n {
         length += 2
-        numbers[1] = m
+        numbers[1] = n
     }
     for i in 1..<numbers.count-1 {
-        if a[i] == m {
-            if numbers[i-1] != m {
-                numbers[i-1] = m
+        if a[i] == n {
+            if numbers[i-1] != n {
+                numbers[i-1] = n
                 length += 2
-            }else if numbers[i+1] != m  {
-                numbers[i+1] = m
+            }else if numbers[i+1] != n  {
+                numbers[i+1] = n
                 length += 2
             }
         }
     }
-    if numbers[a.count-1] == m && numbers[a.count-2] != m {
+    if numbers[a.count-1] == n && numbers[a.count-2] != n {
         length += 2
     }
     return length
 }
+
+func findMaxLength(a:[Int]) -> Int {
+    var answer:Int = 0
+    let sortCounts = countNumbers(a: a).sorted{$0.value > $1.value}
+    for dic in sortCounts {
+        if dic.value * 2 < answer { continue }
+        let length = findLongSubsequence(n:dic.key, a:a)
+        answer = max(answer,length)
+    }
+    return answer
+}
+
 
 solution([0, 3, 1, 6, 0, 2, 0, 7, 1, 3, 4, 0, 5, 1, 1])
 solution([0, 0, 3, 1, 2, 1, 3, 4, 0, 1, 4])
