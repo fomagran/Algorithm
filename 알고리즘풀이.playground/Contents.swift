@@ -1,30 +1,59 @@
 func solution(_ a:[Int]) -> Int {
-    var subDic:[Int:[Int]] = [:]
     if a.count == 1 { return 0}
 
-    subDic[a.first!] = Array(a[0...1])
-    var previous:Int = a[0]
-
-    
-    for i in 1..<a.count {
-        let n:Int = a[i]
-        if subDic[n] == nil {
-            subDic[n] = Array(a[i-1...i])
+    var countDic:[Int:Int] = [:]
+    var answer:Int = 0
+    for n in a {
+        if countDic[n] == nil {
+            countDic[n] = 1
         }else {
-            if previous != n {
-                subDic[n]!.append(contentsOf:a[i-1...i])
-            }
-        }
-        if previous == n {
-            previous = -1
-        }else {
-            previous = n
+            countDic[n]! += 1
         }
     }
-    return subDic.sorted{$0.value.count > $1.value.count}.first?.value.count ?? 0
+
+    for dic in countDic.sorted(by: {$0.value > $1.value}) {
+        if dic.value * 2 < answer { continue }
+        let length = findLongSubsequence(m:dic.key, a:a)
+        answer = max(answer,length)
+    }
+    
+    return answer
 }
 
-solution([0])
-solution([0,1,1,0,0,0])
-solution([5,2,3,3,5,3])
-solution([0,3,3,0,7,2,0,2,2,0])
+func findLongSubsequence(m:Int,a:[Int]) -> Int {
+    var numbers = a
+    var length:Int = 0
+    if a[0] == m && a[1] != m {
+        length += 2
+        numbers[1] = m
+    }
+    for i in 1..<numbers.count-1 {
+        if a[i] == m {
+            if numbers[i-1] != m {
+                numbers[i-1] = m
+                length += 2
+            }else if numbers[i+1] != m  {
+                numbers[i+1] = m
+                length += 2
+            }
+        }
+    }
+    if numbers[a.count-1] == m && numbers[a.count-2] != m {
+        length += 2
+    }
+    return length
+}
+
+solution([0, 3, 1, 6, 0, 2, 0, 7, 1, 3, 4, 0, 5, 1, 1])
+solution([0, 0, 3, 1, 2, 1, 3, 4, 0, 1, 4])
+solution([1, 2, 3, 1, 1, 4, 5, 1])
+solution([2, 1, 1, 3, 4, 1, 1, 5])
+solution([1, 2, 1, 3, 1, 4, 1, 5])
+solution([2, 1, 3, 1, 4, 1, 5, 1])
+solution([1, 2, 1, 3, 1, 4, 1, 5, 1])
+solution([1, 2, 1, 3, 1, 1, 4, 1, 5, 1])
+solution([2, 3, 4, 1, 1, 1, 1, 5, 6, 7])
+
+
+
+
