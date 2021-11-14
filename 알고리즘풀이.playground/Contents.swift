@@ -1,38 +1,45 @@
 import Foundation
 
 func solution(_ n:Int, _ m:Int, _ x:Int, _ y:Int, _ queries:[[Int]]) -> Int64 {
-    var answer:Int64 = 0
-    for y1 in 0..<n {
-        for x1 in 0..<m {
-            var location:(Int,Int) = (x1,y1)
-            for q in queries {
-                let move = moveByCommand(command: q)
-                location = (location.0+move.0,location.1+move.1)
-                location.0 = max(0,location.0)
-                location.1 = max(0,location.1)
-                location.0 = min(m-1,location.0)
-                location.1 = min(n-1,location.1)
-            }
-            if location == (y,x) {
-                answer += 1
-            }
+    var gap = (0,0)
+    queries.forEach {
+        let q:(Int,Int) = move(query: $0)
+        gap = (gap.0+q.0,gap.1+q.1)
+    }
+
+    var maxX:Int64 = 0
+    var maxY:Int64 = 0
+    
+    if y == 0 || y == m-1{
+        maxY = Int64(min(m-1,abs(gap.0))+1)
+    }else {
+        if m - 1 - y >= abs(gap.0) {
+            maxY = 1
         }
     }
-    return answer
+    
+    if x == 0 || x == n-1 {
+        maxX = Int64(min(n-1,abs(gap.1))+1)
+    }else {
+        if n - 1 - x >= abs(gap.1) {
+            maxX = 1
+        }
+    }
+    return maxX * maxY
 }
 
-func moveByCommand(command:[Int]) -> (Int,Int) {
-    switch command[0] {
+func move(query:[Int]) -> (Int,Int) {
+    switch query[0] {
     case 0:
-        return (-command[1],0)
+        return (-query[1],0)
     case 1:
-        return (command[1],0)
+        return (query[1],0)
     case 2:
-        return (0,-command[1])
+        return (0,-query[1])
     default:
-        return (0,command[1])
+        return (0,query[1])
     }
 }
 
-//solution(2, 2, 0, 0, [[2,1],[0,1],[1,1],[0,1],[2,1]])
+solution(2, 2, 0, 0, [[2,1],[0,1],[1,1],[0,1],[2,1]])
 solution(2, 5, 0, 1, [[3,1],[2,2],[1,1],[2,3],[0,1],[2,1]])
