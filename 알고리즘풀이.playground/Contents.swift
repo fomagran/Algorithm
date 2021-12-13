@@ -1,7 +1,7 @@
 import Foundation
 
 struct Line {
-    let x:Double,y:Double,c:Double
+    let x:Int,y:Int,c:Int
 }
 
 struct Square {
@@ -36,9 +36,9 @@ func getIntegerMeet(lines:[[Int]]) -> [Meet] {
     var meets:[Meet] = []
     while !lines.isEmpty {
         let first = lines.removeFirst()
-        let firstLine = Line(x: Double(first[0]), y: Double(first[1]), c: Double(first[2]))
+        let firstLine = Line(x:first[0], y:first[1], c: first[2])
         for l in lines {
-            let otherLine = Line(x: Double(l[0]), y: Double(l[1]), c: Double(l[2]))
+            let otherLine = Line(x: l[0], y: l[1], c: l[2])
             if let meet = findMeet(firstLine,otherLine) {
                 meets.append(meet)
             }
@@ -59,12 +59,12 @@ func getSquare(meets:[Meet]) -> Square {
 }
 
 func findMeet(_ l1:Line,_ l2:Line) -> Meet? {
-    let top:Double = l1.y*l2.c - l2.y*l1.c
-    let bottom:Double = l1.x*l2.y - l2.x*l1.y
-    if bottom == 0 { return nil}
-    let x:Double = top/bottom
-    let y:Double = -(l1.x/l1.y)*x - l1.c/l1.y
-    return x == floor(x) && y == floor(y) ? Meet(x: Int(x), y:Int(y)) : nil
+    let adbc = l1.x*l2.y - l1.y*l2.x
+    if adbc == 0 { return nil }
+    let bfed = l1.y*l2.c - l1.c*l2.y
+    let ecaf = l1.c*l2.x - l1.x*l2.c
+    let meet = Meet(x:bfed/adbc, y:ecaf/adbc)
+    return bfed % adbc == 0 && ecaf % adbc == 0 ? meet : nil
 }
 
 solution([[2, -1, 4], [-2, -1, 4], [0, -1, 1], [5, -8, -12], [5, 8, 12]])
