@@ -1,73 +1,64 @@
 import Foundation
 
-struct Line {
-    let x:Int,y:Int,c:Int
-}
+/*
+ k를 음식 수 만큼으로 나눈다.
+ 나눈 숫자보다 작은 음식만큼 1부터 N까지 뺀다.
+ 나머지에 뺀 숫자들을 다 더하고 남은 음식들로 나눈다.
+ 
+ 1 2
+ 
+ 1 2 3
+ 
+ 1
+ 
+ 1 2
+ 
+ 1
+ */
 
-struct Square {
-    var minX:Int = Int.max
-    var maxX:Int = -Int.max
-    var minY:Int = Int.max
-    var maxY:Int = -Int.max
-}
-
-struct Meet {
-    let x:Int,y:Int
-}
-
-func solution(_ line:[[Int]]) -> [String] {
-    let meets:[Meet] = getIntegerMeet(lines:line)
-    let square = getSquare(meets: meets)
-    return changeMeetsToStar(meets: meets, square: square)
-}
-
-func changeMeetsToStar(meets:[Meet],square:Square) -> [String] {
-    var sqaureDot = Array(repeating: Array(repeating: ".", count: square.maxX-square.minX+1), count: square.maxY-square.minY+1)
-    for meet in meets {
-        let x = meet.x - square.minX
-        let y = square.maxY - meet.y
-        sqaureDot[y][x] = "*"
+func solution(_ food_times:[Int], _ k:Int64) -> Int {
+    
+    var foodDic:[Int:Int] = [:]
+    
+    for (i,food) in food_times.enumerated() {
+        foodDic[i+1] = food
     }
-    return sqaureDot.map{$0.joined()}
-}
-
-func getIntegerMeet(lines:[[Int]]) -> [Meet] {
-    var lines:[[Int]] = lines
-    var meets:[Meet] = []
-    while !lines.isEmpty {
-        let first = lines.removeFirst()
-        let firstLine = Line(x:first[0], y:first[1], c: first[2])
-        for l in lines {
-            let otherLine = Line(x: l[0], y: l[1], c: l[2])
-            if let meet = findMeet(firstLine,otherLine) {
-                meets.append(meet)
-            }
+    
+    var share = (k+1)/Int64(food_times.count)
+    var remain = (k+1)%Int64(food_times.count)
+    var foodCount = foodDic.count
+    foodDic = foodDic.filter{$0.value > share}
+    foodCount -= foodDic.count
+    for (key,value) in foodDic {
+        foodDic[key] = value-Int(share)
+    }
+    if foodCount >= 1 {
+        for i in 1...foodCount {
+            remain += Int64(i)
         }
     }
-    return meets
-}
-
-func getSquare(meets:[Meet]) -> Square {
-    var square:Square = Square()
-    meets.forEach {
-        square.minX = min(square.minX,$0.x)
-        square.maxX = max(square.maxX,$0.x)
-        square.minY = min(square.minY,$0.y)
-        square.maxY = max(square.maxY,$0.y)
+    
+    share = remain/Int64(foodDic.count)
+    remain = remain%Int64(foodDic.count)
+    
+    while remain > foodDic.count {
+        foodDic = foodDic.filter{$0.value > share}
+        foodCount -= foodDic.count
+        for (key,value) in foodDic {
+            foodDic[key] = value-Int(share)
+        }
+        if foodCount >= 1 {
+            for i in 1...foodCount {
+                remain += Int64(i)
+            }
+        }
+        share = remain/Int64(foodDic.count)
+        remain = remain%Int64(foodDic.count)
     }
-    return square
+    
+    let sortFood = foodDic.sorted{$0.key < $1.key}
+    
+    return sortFood[Int(remain)].key
 }
 
-func findMeet(_ l1:Line,_ l2:Line) -> Meet? {
-    let adbc = l1.x*l2.y - l1.y*l2.x
-    if adbc == 0 { return nil }
-    let bfed = l1.y*l2.c - l1.c*l2.y
-    let ecaf = l1.c*l2.x - l1.x*l2.c
-    let meet = Meet(x:bfed/adbc, y:ecaf/adbc)
-    return bfed % adbc == 0 && ecaf % adbc == 0 ? meet : nil
-}
-
-solution([[2, -1, 4], [-2, -1, 4], [0, -1, 1], [5, -8, -12], [5, 8, 12]])
-solution([[0, 1, -1], [1, 0, -1], [1, 0, 1]])
-solution([[1, -1, 0], [2, -1, 0]])
-solution([[1, -1, 0], [2, -1, 0], [4, -1, 0]])
+solution([3,1,2], 5)
