@@ -1,5 +1,18 @@
 import Foundation
 
+class Node {
+    var value:String
+    var count:Int = 0
+    var children:[String:Node] = [:]
+    init(value:String) {
+        self.value = value
+    }
+    
+    func append(_ value:String) {
+        self.children[value] = Node(value: value)
+    }
+}
+
 class Trie {
     let root:Node
     
@@ -22,28 +35,15 @@ class Trie {
     func getCount(_ word:String) -> Int {
         var current = root
         let map = word.map{String($0)}
+        var check = false
         for w in map {
             if current.children.keys.contains(w) {
                 current = current.children[w]!
             }else {
-                break
+                check = true
             }
         }
-        return current.count == 0 ? 1 : current.count
-    }
-}
-
-class Node {
-    var value:String
-    var count:Int
-    var children:[String:Node] = [:]
-    init(value:String) {
-        self.value = value
-        self.count = 0
-    }
-    
-    func append(_ value:String) {
-        self.children[value] = Node(value: value)
+        return check ? 0 : current.count == 0 ? 1 : current.count
     }
 }
 
@@ -76,7 +76,7 @@ func solution(_ words:[String], _ queries:[String]) -> [Int] {
             continue
         }
         if isReverse {
-            result = lengthDic[count]![1].getCount(pre)
+            result = lengthDic[count]![1].getCount(String(pre.reversed()))
         }else {
             result = lengthDic[count]![0].getCount(pre)
         }
@@ -87,4 +87,4 @@ func solution(_ words:[String], _ queries:[String]) -> [Int] {
     return results
 }
 
-solution(["frodo", "front", "frost", "frozen", "frame", "kakao"],["fro??", "????o", "fr???", "fro???", "pro?"])
+solution(["frodo", "front", "frost", "frozen", "frame", "kakao"],["fro??", "????o", "fr???", "fro???", "pro?","frozee","f????","?????"])
