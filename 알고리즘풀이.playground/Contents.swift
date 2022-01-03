@@ -1,46 +1,90 @@
-struct Bridge {
-    var start:Int,mid:Int,end:Int,min:Int
-}
+import Foundation
 
-func solution(_ distance:Int, _ rocks:[Int], _ n:Int) -> Int {
-    return getMinCount(rocks: rocks, n: n, distance: distance)
-}
-
-func getMinCount(rocks:[Int],n:Int,distance:Int) -> Int {
-    let sortedRock:[Int] = rocks.sorted()
-    var bridge = Bridge(start: 1, mid: 1+distance/2, end: distance,min: 0)
-    while bridge.start <= bridge.end {
-        bridge.mid = (bridge.start+bridge.end)/2
-        print(bridge.mid)
-        let count = getDeletedRockCount(sortedRock, bridge: bridge)
-        print(count)
-        updateBridgeLength(bridge: &bridge, count: count, n: n)
+class Trie {
+    let root:Node
+    
+    init() {
+        self.root = Node(value:"")
     }
-    return bridge.min
+    
+    func insert(_ word:String) {
+        var current = root
+        let map = word.map{String($0)}
+        map.forEach {
+            current.count += 1
+            if !current.children.keys.contains($0) {
+                current.append($0)
+            }
+            current = current.children[$0]!
+        }
+    }
+    
+    func getCount(_ word:String) -> Int {
+        var current = root
+        let map = word.map{String($0)}
+        for w in map {
+            if current.children.keys.contains(w) {
+                current = current.children[w]!
+            }else {
+                break
+            }
+        }
+        return current.count == 0 ? 1 : current.count
+    }
 }
 
-func getDeletedRockCount(_ rocks:[Int],bridge:Bridge) -> Int {
-    var prev = 0
-    var count = 0
-    for rock in rocks {
-        if rock-prev < bridge.mid {
-            count += 1
+class Node {
+    var value:String
+    var count:Int
+    var children:[String:Node] = [:]
+    init(value:String) {
+        self.value = value
+        self.count = 0
+    }
+    
+    func append(_ value:String) {
+        self.children[value] = Node(value: value)
+    }
+}
+
+func solution(_ words:[String], _ queries:[String]) -> [Int] {
+    var lengthDic:[Int:[Trie]] = [:]
+    var results:[Int] = []
+    
+    for word in words {
+        if lengthDic[word.count] == nil {
+            let trie = Trie()
+            let reverse = Trie()
+            trie.insert(word)
+            let reveseWord = String(word.reversed())
+            reverse.insert(reveseWord)
+            lengthDic[word.count] = [trie,reverse]
+        }else {
+            lengthDic[word.count]![0].insert(word)
+            let reveseWord = String(word.reversed())
+            lengthDic[word.count]![1].insert(reveseWord)
+        }
+    }
+    
+    for query in queries {
+        let count = query.count
+        let pre = query.map{String($0)}.filter{$0 != "?"}.joined()
+        let isReverse = query.first == "?"
+        var result = 0
+        if lengthDic[count] == nil {
+            results.append(0)
             continue
         }
-        prev = rock
+        if isReverse {
+            result = lengthDic[count]![1].getCount(pre)
+        }else {
+            result = lengthDic[count]![0].getCount(pre)
+        }
+
+        results.append(result)
     }
-    return count
+
+    return results
 }
 
-func updateBridgeLength(bridge:inout Bridge,count:Int,n:Int) {
-    if count > n {
-        bridge.end = bridge.mid - 1
-    }else {
-        bridge.min = bridge.mid
-        bridge.start = bridge.mid + 1
-    }
-}
-
-solution(25, [2,14,11,21,17], 2)
-
-
+solution(["frodo", "front", "frost", "frozen", "frame", "kakao"],["fro??", "????o", "fr???", "fro???", "pro?"])
