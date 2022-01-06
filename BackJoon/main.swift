@@ -5,30 +5,16 @@
 //  Created by Fomagran on 2022/01/06.
 //
 
-import Foundation
+var count:Int = 0
+var max = (0,0)
 
-let line = readLine() ?? ""
-let lineArr = line.split(separator: " ").map{String($0)}
-var A = Array(lineArr[0].map{String($0)}.reversed())
-var B = Array(lineArr[1].map{String($0)}.reversed())
-var isALong = A.count > B.count
-let addZero = Array(repeating: "0", count: abs(A.count-B.count))
-
-A = isALong ? A : A + addZero
-B = isALong ? B + addZero : B
-
-var remain = 0
-var answer:[String] = []
-let count = isALong ? A.count : B.count
-
-for i in 0..<count {
-    let sum = Int(A[i])! + Int(B[i])! + remain
-    remain = sum/10
-    if i == count - 1 {
-        answer.append(String(sum))
-    }else {
-        answer.append(String(sum%10))
+while count < 9 {
+    let n = Int(readLine() ?? "") ?? 0
+    count += 1
+    if max.1 < n {
+        max = (count,n)
     }
 }
 
-print(Array(answer.reversed()).joined())
+print(max.1)
+print(max.0)
