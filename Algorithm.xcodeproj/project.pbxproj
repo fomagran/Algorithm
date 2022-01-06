@@ -6,12 +6,37 @@
 	objectVersion = 50;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		0417952B2786CB5700ECE0AC /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0417952A2786CB5700ECE0AC /* main.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		041795262786CB5700ECE0AC /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		041795282786CB5700ECE0AC /* BackJoon */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = BackJoon; sourceTree = BUILT_PRODUCTS_DIR; };
+		0417952A2786CB5700ECE0AC /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		0469627825A6D5D500E41102 /* Algorithm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Algorithm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		04E24FFE25EE6AFA00ECB835 /* 알고리즘풀이.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = "알고리즘풀이.playground"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		041795252786CB5700ECE0AC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0469627525A6D5D500E41102 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -22,10 +47,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		041795292786CB5700ECE0AC /* BackJoon */ = {
+			isa = PBXGroup;
+			children = (
+				0417952A2786CB5700ECE0AC /* main.swift */,
+			);
+			path = BackJoon;
+			sourceTree = "<group>";
+		};
 		0469626F25A6D5D500E41102 = {
 			isa = PBXGroup;
 			children = (
 				04E24FFE25EE6AFA00ECB835 /* 알고리즘풀이.playground */,
+				041795292786CB5700ECE0AC /* BackJoon */,
 				0469627925A6D5D500E41102 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -34,6 +68,7 @@
 			isa = PBXGroup;
 			children = (
 				0469627825A6D5D500E41102 /* Algorithm.app */,
+				041795282786CB5700ECE0AC /* BackJoon */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -41,6 +76,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		041795272786CB5700ECE0AC /* BackJoon */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0417952E2786CB5700ECE0AC /* Build configuration list for PBXNativeTarget "BackJoon" */;
+			buildPhases = (
+				041795242786CB5700ECE0AC /* Sources */,
+				041795252786CB5700ECE0AC /* Frameworks */,
+				041795262786CB5700ECE0AC /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BackJoon;
+			productName = BackJoon;
+			productReference = 041795282786CB5700ECE0AC /* BackJoon */;
+			productType = "com.apple.product-type.tool";
+		};
 		0469627725A6D5D500E41102 /* Algorithm */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0469628C25A6D5D700E41102 /* Build configuration list for PBXNativeTarget "Algorithm" */;
@@ -64,9 +116,12 @@
 		0469627025A6D5D500E41102 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1230;
+				LastSwiftUpdateCheck = 1310;
 				LastUpgradeCheck = 1230;
 				TargetAttributes = {
+					041795272786CB5700ECE0AC = {
+						CreatedOnToolsVersion = 13.1;
+					};
 					0469627725A6D5D500E41102 = {
 						CreatedOnToolsVersion = 12.3;
 					};
@@ -86,6 +141,7 @@
 			projectRoot = "";
 			targets = (
 				0469627725A6D5D500E41102 /* Algorithm */,
+				041795272786CB5700ECE0AC /* BackJoon */,
 			);
 		};
 /* End PBXProject section */
@@ -101,6 +157,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		041795242786CB5700ECE0AC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0417952B2786CB5700ECE0AC /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0469627425A6D5D500E41102 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -111,6 +175,34 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		0417952C2786CB5700ECE0AC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2F54VR68GM;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 11.6;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		0417952D2786CB5700ECE0AC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2F54VR68GM;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 11.6;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		0469628A25A6D5D700E41102 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -268,6 +360,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		0417952E2786CB5700ECE0AC /* Build configuration list for PBXNativeTarget "BackJoon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0417952C2786CB5700ECE0AC /* Debug */,
+				0417952D2786CB5700ECE0AC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		0469627325A6D5D500E41102 /* Build configuration list for PBXProject "Algorithm" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
