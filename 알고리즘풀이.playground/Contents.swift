@@ -1,70 +1,41 @@
 import Foundation
 
-var maxScore:Int = -1
-var maxHistory:[[Int]] = []
+var maxCount = -1
+var pc:[Int:[Int]] = [:]
 
-func solution(_ n:Int, _ info:[Int]) -> [Int] {
-    let history = Array(repeating: 0, count: 11)
-    dfs(leftArrow: n, depth: 10, history: history, info: info)
-    if maxScore <= 0 {
-        return [-1]
-    }
-    return sortByMoreLowerScore()
-}
-
-func sortByMoreLowerScore() -> [Int]{
-    var answer:[Int] = maxHistory.first!
-    var max = 0
-    for history in maxHistory {
-        let numCount = history.filter{$0 != 0 }.count
-        if max < numCount {
-            answer = history
-            max = numCount
+func solution(_ info:[Int], _ edges:[[Int]]) -> Int {
+    for edge in edges {
+        if pc[edge[0]] == nil {
+            pc[edge[0]] = [edge[1]]
+        }else {
+            pc[edge[0]]!.append(edge[1])
         }
     }
-    return answer.reversed()
+    dfs(1, 0, pc[0]!, info)
+    return maxCount
 }
 
-func dfs(leftArrow:Int,depth:Int,history:[Int],info:[Int]) {
-    var newHistory = history
-    var newLeftArrow = leftArrow
-    
-    if depth == 0 || leftArrow <= 0 {
-        newHistory[0] = depth == 0 ? leftArrow : newHistory[0]
-        let score = getScoreGap(history,info)
-        if maxScore == score {
-            maxHistory.append(newHistory)
-        }else if maxScore < score {
-            maxScore = score
-            maxHistory = [newHistory]
-        }
+func dfs(_ sheepCount:Int,_ wolfCount:Int,_ visitableNodes:[Int],_ info:[Int]) {
+    var newSheepCount = sheepCount
+    var newWolfCount = wolfCount
+    print(wolfCount,sheepCount)
+    if wolfCount == sheepCount {
+        maxCount = max(maxCount,sheepCount)
         return
     }
     
-    if leftArrow > info[10-depth] {
-        newLeftArrow -= info[10-depth]+1
-        newHistory[depth] = info[10-depth]+1
-        dfs(leftArrow: newLeftArrow, depth: depth-1, history: newHistory, info: info)
-        newHistory[depth] = 0
+    for node in visitableNodes {
+        var newVisitableNodes = visitableNodes
+        let index = newVisitableNodes.firstIndex(of:node)!
+        newVisitableNodes.remove(at: index)
+        newVisitableNodes.append(contentsOf:pc[info[node]] ?? [])
+        if info[node] == 0 {
+            newSheepCount += 1
+        }else {
+            newWolfCount += 1 
+        }
+        dfs(newSheepCount, newWolfCount, newVisitableNodes, info)
     }
-    
-    dfs(leftArrow: leftArrow, depth: depth-1, history: newHistory, info: info)
 }
 
-func getScoreGap(_ history:[Int],_ info:[Int]) -> Int {
-    var ryan = 0
-    var apeach = 0
-    for (i,s) in history.enumerated() {
-           if s == 0 {
-               if info[10-i] != 0 {
-                   apeach += i
-               }
-           }else {
-               ryan += i
-           }
-       }
-    return ryan - apeach
-}
-
-solution(10,[0,0,0,0,0,0,0,0,3,4,3])
-
+solution([0,0,1,1,1,0,1,0,1,0,1,1], [[0,1],[1,2],[1,4],[0,8],[8,7],[9,10],[9,11],[4,3],[6,5],[4,6],[8,9]])

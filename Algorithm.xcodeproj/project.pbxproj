@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0417952B2786CB5700ECE0AC /* A와B 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0417952A2786CB5700ECE0AC /* A와B 2.swift */; };
+		04B44F0E279825F200EBD14A /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B44F0D279825F200EBD14A /* main.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,6 +27,7 @@
 		041795282786CB5700ECE0AC /* BackJoon */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = BackJoon; sourceTree = BUILT_PRODUCTS_DIR; };
 		0417952A2786CB5700ECE0AC /* A와B 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "A와B 2.swift"; sourceTree = "<group>"; };
 		0469627825A6D5D500E41102 /* Algorithm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Algorithm.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		04B44F0D279825F200EBD14A /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		04E24FFE25EE6AFA00ECB835 /* 알고리즘풀이.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = "알고리즘풀이.playground"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 /* End PBXFileReference section */
 
@@ -51,6 +53,7 @@
 			isa = PBXGroup;
 			children = (
 				0417952A2786CB5700ECE0AC /* A와B 2.swift */,
+				04B44F0D279825F200EBD14A /* main.swift */,
 			);
 			path = BackJoon;
 			sourceTree = "<group>";
@@ -161,6 +164,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04B44F0E279825F200EBD14A /* main.swift in Sources */,
 				0417952B2786CB5700ECE0AC /* A와B 2.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
