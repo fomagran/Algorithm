@@ -1,34 +1,23 @@
 import Foundation
 
-func solution(_ id_list:[String], _ report:[String], _ k:Int) -> [Int] {
-    var reportInfo:[String:Set<String>] = [:]
-    var reportCount:[Int] = Array(repeating: 0, count: id_list.count)
-    var idNumber:[String:Int] = [:]
-    
-    for (i,id) in id_list.enumerated() {
-        idNumber[id] = i
-    }
-    
-    for r in report {
-        let split = r.split(separator: " ")
-        let report = String(split[0])
-        let reported = String(split[1])
-        if reportInfo[reported] == nil {
-            reportInfo[reported] = [report]
-        }else {
-            reportInfo[reported]!.insert(report)
-        }
-    }
-    
-    for info in reportInfo {
-        if info.value.count >= k {
-            for id in info.value {
-                reportCount[idNumber[id]!] += 1
-            }
-        }
-    }
-    return reportCount
+func solution(_ n:Int, _ k:Int) -> Int {
+    let trit = String(n,radix: k)
+    let numbers = trit.split(separator: "0")
+    return numbers.filter{isPrimeNumber(Int($0)!)}.count
 }
 
-solution(["muzi", "frodo", "apeach", "neo"], ["muzi frodo","apeach frodo","frodo neo","muzi neo","apeach muzi"], 2)
-solution(["con", "ryan"], ["ryan con", "ryan con", "ryan con", "ryan con"], 3)
+func isPrimeNumber(_ n:Int) -> Bool {
+    if n == 1  { return false }
+    if n == 2 || n == 3 {return true}
+    let sq = Int(sqrt(Double(n)))
+    for i in 2...sq {
+        if n%i == 0 {
+            return false
+        }
+    }
+    return true
+}
+
+solution(437674, 3)
+solution(110011, 10)
+
