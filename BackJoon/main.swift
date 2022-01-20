@@ -1,72 +1,51 @@
 import Foundation
 
-struct Location {
+struct Point {
     var x:Int,y:Int
 }
 
-struct GameResult {
-    var count:Int,isWinnerA:Bool
-}
-
-func solution(_ board:[[Int]], _ aloc:[Int], _ bloc:[Int]) -> Int {
-    let b = wrapBoardEdges(board)
-    let aLoc = Location(x: aloc[0]+1, y: aloc[1]+1)
-    let bLoc = Location(x: bloc[0]+1, y: bloc[1]+1)
-    let result = move(b, 0, aLoc, bLoc)
-    return result.count
-}
-
-func wrapBoardEdges(_ board:[[Int]]) -> [[Int]] {
-    var b = board
-    for i in 0..<board.count {
-        b[i].insert(0, at: 0)
-        b[i].append(0)
+func solution(_ board:[[Int]], _ skill:[[Int]]) -> Int {
+    var zeroBoard = Array(repeating: Array(repeating:0, count: board[0].count+1), count:board.count+1)
+    for s in skill {
+        changeBoard(&zeroBoard, s)
     }
-    b.insert(Array(repeating: 0, count: board[0].count+2), at: 0)
-    b.append(Array(repeating: 0, count: board[0].count+2))
-    return b
+    addVertically(&zeroBoard)
+    return addHorizontally(&zeroBoard,board)
 }
 
-func move(_ board:[[Int]], _ count:Int,_ aLoc:Location,_ bLoc:Location) -> GameResult {
-    let isTurnA = count%2 == 0 ? true : false
-    let loc = isTurnA ? aLoc : bLoc
-    var minCount = Int.max
-    var maxCount = 0
-    
-    if board[loc.x][loc.y] == 0 {
-        return GameResult(count: count, isWinnerA: isTurnA)
-    }
-        
-    for l in makeLRUD(loc).filter({board[$0.x][$0.y] != 0}) {
-        var newBoard = board
-        newBoard[loc.x][loc.y] = 0
-        let moved = isTurnA ? move(newBoard,count+1,l,bLoc) : move(newBoard,count+1,aLoc,l)
-        let result = isTurnA ? moved.isWinnerA :!moved.isWinnerA
-        if result {
-            maxCount = max(maxCount,moved.count)
-        }else {
-            minCount = min(minCount,moved.count)
+func addHorizontally(_ board:inout [[Int]],_ original:[[Int]]) -> Int {
+    var count = 0
+    for i in 0..<board.count-1 {
+        for j in 0..<board[0].count-1 {
+            if j != 0 {
+                board[i][j] += board[i][j-1]
+            }
+            if board[i][j] + original[i][j] > 0{
+                count += 1
+            }
         }
     }
-    
-    if minCount == Int.max && maxCount == 0 {
-        return GameResult(count: count, isWinnerA: isTurnA)
-    }
-    
-    if minCount != Int.max {
-        return GameResult(count: minCount, isWinnerA: !isTurnA)
-    }
-    
-    return GameResult(count: maxCount, isWinnerA: isTurnA)
+    return count
 }
 
-func makeLRUD(_ loc:Location) -> [Location] {
-    return [Location(x: loc.x-1, y: loc.y),Location(x: loc.x+1, y: loc.y),Location(x: loc.x, y: loc.y-1),Location(x: loc.x, y: loc.y+1)]
+func addVertically(_ board:inout [[Int]]) {
+    for j in 0..<board[0].count-1 {
+        for i in 1..<board.count-1 {
+            board[i][j] += board[i-1][j]
+        }
+    }
 }
 
+func changeBoard(_ board:inout [[Int]],_ skill:[Int]){
+    let isHeal = skill[0] == 2
+    let start = Point(x: skill[2], y: skill[1])
+    let end = Point(x: skill[4], y: skill[3])
+    let degree = isHeal ? skill[5] : -skill[5]
+    board[start.y][start.x] += degree
+    board[end.y+1][end.x+1] += degree
+    board[start.y][end.x+1] -= degree
+    board[end.y+1][start.x] -= degree
+}
 
-print(solution([[1, 1, 1], [1, 1, 1], [1, 1, 1]], [1,0], [1,2]))
-print(solution([[1, 1, 1], [1, 0, 1], [1, 1, 1]], [1,0], [1,2]))
-print(solution([[1, 1, 1, 1, 1]], [0,0], [0,4]))
-print(solution([[1]], [0,0], [0,0]))
-
+//print(solution([[5,5,5,5,5],[5,5,5,5,5],[5,5,5,5,5],[5,5,5,5,5]],[[1,0,0,3,4,4],[1,2,0,2,3,2],[2,1,0,3,1,2],[1,0,1,3,3,1]]))
+print(solution([[1,2,3],[4,5,6],[7,8,9]], [[1,1,1,2,2,4],[1,0,0,1,1,2],[2,2,0,2,0,100]]))
