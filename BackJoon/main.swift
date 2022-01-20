@@ -1,44 +1,72 @@
-//
-//  main.swift
-//  BackJoon
-//
-//  Created by Fomagran on 2022/01/19.
-//
-
 import Foundation
 
-var maxCount = -1
-var pc:[Int:[Int]] = [:]
-
-func solution(_ info:[Int], _ edges:[[Int]]) -> Int {
-    connectEdge(edges)
-    dfs((1, 0), pc[0]!, info)
-    return maxCount
+struct Location {
+    var x:Int,y:Int
 }
 
-func connectEdge(_ edges:[[Int]]) {
-    for edge in edges {
-        if pc[edge[0]] == nil {
-            pc[edge[0]] = [edge[1]]
+struct GameResult {
+    var count:Int,isWinnerA:Bool
+}
+
+func solution(_ board:[[Int]], _ aloc:[Int], _ bloc:[Int]) -> Int {
+    let b = wrapBoardEdges(board)
+    let aLoc = Location(x: aloc[0]+1, y: aloc[1]+1)
+    let bLoc = Location(x: bloc[0]+1, y: bloc[1]+1)
+    let result = move(b, 0, aLoc, bLoc)
+    return result.count
+}
+
+func wrapBoardEdges(_ board:[[Int]]) -> [[Int]] {
+    var b = board
+    for i in 0..<board.count {
+        b[i].insert(0, at: 0)
+        b[i].append(0)
+    }
+    b.insert(Array(repeating: 0, count: board[0].count+2), at: 0)
+    b.append(Array(repeating: 0, count: board[0].count+2))
+    return b
+}
+
+func move(_ board:[[Int]], _ count:Int,_ aLoc:Location,_ bLoc:Location) -> GameResult {
+    let isTurnA = count%2 == 0 ? true : false
+    let loc = isTurnA ? aLoc : bLoc
+    var minCount = Int.max
+    var maxCount = 0
+    
+    if board[loc.x][loc.y] == 0 {
+        return GameResult(count: count, isWinnerA: isTurnA)
+    }
+        
+    for l in makeLRUD(loc).filter({board[$0.x][$0.y] != 0}) {
+        var newBoard = board
+        newBoard[loc.x][loc.y] = 0
+        let moved = isTurnA ? move(newBoard,count+1,l,bLoc) : move(newBoard,count+1,aLoc,l)
+        let result = isTurnA ? moved.isWinnerA :!moved.isWinnerA
+        if result {
+            maxCount = max(maxCount,moved.count)
         }else {
-            pc[edge[0]]!.append(edge[1])
+            minCount = min(minCount,moved.count)
         }
     }
-}
-
-func dfs(_ count:(Int,Int),_ visitableNodes:[Int],_ info:[Int]) {
-    maxCount = max(count.0,maxCount)
-    for node in visitableNodes {
-        var newVisitableNodes = visitableNodes
-        var newCount = count
-        let index = newVisitableNodes.firstIndex(of:node)!
-        newVisitableNodes.remove(at: index)
-        newVisitableNodes.append(contentsOf:pc[node] ?? [])
-        newCount = info[node] == 0 ? (count.0+1,count.1) : (count.0,count.1+1)
-        if newCount.0 > newCount.1 {
-            dfs(newCount, newVisitableNodes, info)
-        }
+    
+    if minCount == Int.max && maxCount == 0 {
+        return GameResult(count: count, isWinnerA: isTurnA)
     }
+    
+    if minCount != Int.max {
+        return GameResult(count: minCount, isWinnerA: !isTurnA)
+    }
+    
+    return GameResult(count: maxCount, isWinnerA: isTurnA)
 }
 
-print(solution([0,0,1,1,1,0,1,0,1,0,1,1], [[0,1],[1,2],[1,4],[0,8],[8,7],[9,10],[9,11],[4,3],[6,5],[4,6],[8,9]]))
+func makeLRUD(_ loc:Location) -> [Location] {
+    return [Location(x: loc.x-1, y: loc.y),Location(x: loc.x+1, y: loc.y),Location(x: loc.x, y: loc.y-1),Location(x: loc.x, y: loc.y+1)]
+}
+
+
+print(solution([[1, 1, 1], [1, 1, 1], [1, 1, 1]], [1,0], [1,2]))
+print(solution([[1, 1, 1], [1, 0, 1], [1, 1, 1]], [1,0], [1,2]))
+print(solution([[1, 1, 1, 1, 1]], [0,0], [0,4]))
+print(solution([[1]], [0,0], [0,0]))
+
