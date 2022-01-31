@@ -3,17 +3,16 @@ let vowels = ["a","e","i","o","u"]
 
 while word != "end" {
     let map = word.map{String($0)}
-    var isContainVowel = false
     var consonantCount = 0
     var vowelCount = 0
     var consLetters:[String] = []
-    var isAcceptable = true
+    var isAcceptable = false
     
     for s in map {
         if vowels.contains(s) {
             consonantCount = 0
             vowelCount += 1
-            isContainVowel = true
+            isAcceptable = true
         }else {
             vowelCount = 0
             consonantCount += 1
@@ -28,7 +27,7 @@ while word != "end" {
         }
         consLetters.append(s)
     }
-    if isAcceptable && isContainVowel {
+    if isAcceptable {
         print("<\(word)> is acceptable.")
     }else {
         print("<\(word)> is not acceptable.")
