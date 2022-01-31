@@ -47,19 +47,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		041795292786CB5700ECE0AC /* BackJoon */ = {
+		041795292786CB5700ECE0AC /* BaekJoon */ = {
 			isa = PBXGroup;
 			children = (
 				04B44F0D279825F200EBD14A /* main.swift */,
 			);
-			path = BackJoon;
+			path = BaekJoon;
 			sourceTree = "<group>";
 		};
 		0469626F25A6D5D500E41102 = {
 			isa = PBXGroup;
 			children = (
 				04E24FFE25EE6AFA00ECB835 /* 알고리즘풀이.playground */,
-				041795292786CB5700ECE0AC /* BackJoon */,
+				041795292786CB5700ECE0AC /* BaekJoon */,
 				0469627925A6D5D500E41102 /* Products */,
 			);
 			sourceTree = "<group>";
