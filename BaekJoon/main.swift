@@ -1,11 +1,23 @@
 import Foundation
 
 let count = Int(readLine()!)!
-let nums = String(readLine()!).split(separator: " ").map{Int($0)!}
+var matrix:[[Int]] = []
 
-func aVeryBigSum(ar: [Int]) -> Int {
-    return ar.reduce(0){$0+$1}
+for _ in 0..<count {
+    let nums = String(readLine()!).split(separator: " ").map{Int($0)!}
+    matrix.append(nums)
 }
 
-print(aVeryBigSum(ar: nums))
+func diagonalDifference(arr: [[Int]]) -> Int {
+    var d1 = 0
+    var d2 = 0
+    for i in 0..<arr.count {
+        d1 += matrix[i][i]
+        d2 += matrix[i][matrix.count-1-i]
+    }
+    return abs(d1-d2)
+}
+
+print(diagonalDifference(arr: matrix))
+
 
