@@ -1,23 +1,25 @@
 import Foundation
 
-let count = Int(readLine()!)!
-var matrix:[[Int]] = []
+let count = Double(readLine()!)!
+let nums = String(readLine()!).split(separator: " ").map{Int($0)!}
 
-for _ in 0..<count {
-    let nums = String(readLine()!).split(separator: " ").map{Int($0)!}
-    matrix.append(nums)
-}
+var negativeCount:Double = 0
+var positiveCount:Double = 0
 
-func diagonalDifference(arr: [[Int]]) -> Int {
-    var d1 = 0
-    var d2 = 0
-    for i in 0..<arr.count {
-        d1 += matrix[i][i]
-        d2 += matrix[i][matrix.count-1-i]
+for n in nums {
+    if n < 0 {
+        negativeCount += 1
+    }else if n > 0{
+        positiveCount += 1
     }
-    return abs(d1-d2)
 }
 
-print(diagonalDifference(arr: matrix))
+let pos = positiveCount/count
+print(String(format: "%.6f", pos))
+let neg = negativeCount/count
+print(String(format: "%.6f", neg))
+let zero = (count - (negativeCount+positiveCount))/count
+print(String(format: "%.6f", zero))
+
 
 
