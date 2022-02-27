@@ -1,11 +1,8 @@
-func singleNumber(_ nums: [Int]) -> Int {
-    var dic:[Int:Bool] = [:]
-    for n in nums {
-        dic[n] = dic[n] == nil ? true : nil
+func plusOne(_ digits: [Int]) -> [Int] {
+    let answer:[Int] = []
+    for i in stride(from: digits.count-1, through: 0, by: -1) {
+        
     }
-    return dic.keys.first!
-  }
-
-print(singleNumber([4,1,2,1,2]))
-
+    return answer
+}
 
