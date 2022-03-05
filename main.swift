@@ -1,13 +1,12 @@
-func plusOne(_ digits: [Int]) -> [Int] {
-    var answer:[Int] = digits
-    var last:(Int,Int) = (0,0)
-
-    for i in stride(from: digits.count-1, through: 0, by: -1) {
-        last = (i,digits[i])
-        answer[i] = answer[i] != 9 ? answer[i] + 1 : 0
-        if answer[i] != 0 { break }
+func solution(_ n:Int) -> Int {
+    if n == 1 { return 1}
+    var cur = 0
+    var answer = 0
+    for i in 1...n-1 {
+        cur += i
+        answer += cur
     }
-    return last == (0,9) ? [1] + answer : answer
+    return answer+1
 }
 
-print(plusOne([0]))
+print(solution(5))
