@@ -1,9 +1,5 @@
 import Foundation
 
-/*
- 세로,가로 6개씩 확인 똑같은 숫자가 4개가 있다면 해당 위치엔 존재하는 거임
- */
-
 struct Location {
     let position:CGPoint
     let number:Int
@@ -28,8 +24,92 @@ func solution(_ board:[[Int]]) -> Int {
     N = board.count
     findVerticalBox(board)
     findHorizontalBox(board)
-    print(locations,locations.count)
-    return 0
+    return countRemovableBlocks()
+}
+
+func countRemovableBlocks() -> Int {
+    var count:Int = 0
+    var sorted = locations.sorted{$0.position.y > $1.position.y}
+outer:for (i,location) in sorted.enumerated() {
+    if location.number == 1 {
+        if location.type == 2 {
+                let filter = sorted.filter{location.position.y < $0.position.y}
+                for f in filter {
+                    let start = f.isVertical ? -1 : -2
+                    for x in start...1{
+                    if f.position.x == location.position.x+CGFloat(x) {
+                        if f.number != location.number || f.type != location.type {
+                            continue outer
+                        }
+                    }
+                }
+            }
+            count += 1
+            sorted[i] = Location(position: CGPoint(x: -1, y: -1), number: -1, type: -1, isVertical: false)
+        }else if location.type == 3 {
+                let filter = sorted.filter{location.position.y < $0.position.y}
+                for f in filter {
+                    let start = f.isVertical ? -1 : -2
+                    for x in start...1{
+                    if f.position.x == location.position.x+CGFloat(x) {
+                        if f.number != location.number || f.type != location.type {
+                            continue outer
+                        }
+                    }
+                }
+            }
+            count += 1
+            sorted[i] = Location(position: CGPoint(x: -1, y: -1), number: -1, type: -1, isVertical: false)
+        }
+    }else if location.number == 2 {
+        if location.type == 1 {
+                let filter = sorted.filter{location.position.y < $0.position.y}
+                for f in filter {
+                    let start = f.isVertical ? -1 : -2
+                    for x in start...1{
+                    if f.position.x == location.position.x+CGFloat(x) {
+                        if f.number != location.number || f.type != location.type {
+                            continue outer
+                        }
+                    }
+                }
+            }
+            count += 1
+            sorted[i] = Location(position: CGPoint(x: -1, y: -1), number: -1, type: -1, isVertical: false)
+        }else if location.type == 2 {
+                let filter = sorted.filter{location.position.y < $0.position.y}
+                for f in filter {
+                    let start = f.isVertical ? -1 : -2
+                    for x in start...1{
+                    if f.position.x == location.position.x+CGFloat(x) {
+                        if f.number != location.number || f.type != location.type {
+                            continue outer
+                        }
+                    }
+                }
+            }
+            count += 1
+            sorted[i] = Location(position: CGPoint(x: -1, y: -1), number: -1, type: -1, isVertical: false)
+        }
+    }else if location.number == 3 {
+        if location.type == 0 {
+            let filter = sorted.filter{location.position.y < $0.position.y}
+            for f in filter {
+                let start = f.isVertical ? -1 : -2
+                for x in start...2 {
+                    if f.position.x == location.position.x+CGFloat(x) {
+                        if f.number != location.number || f.type != location.type {
+                            continue outer
+                        }
+                    }
+                }
+            }
+            count += 1
+            sorted[i] = Location(position: CGPoint(x: -1, y: -1), number: -1, type: -1, isVertical: false)
+        }
+    }
+}
+    return count
 }
 
 func findVerticalBox(_ board:[[Int]]) {
@@ -41,10 +121,10 @@ func findVerticalBox(_ board:[[Int]]) {
             }
             let change = isExistEqual4Number(block)
             if let change = change {
-            let equal = checkEqualBlock(change, isVertical: true, position: CGPoint(x: j, y: N-i))
-            if let equal = equal {
-                locations.append(equal)
-            }
+                let equal = checkEqualBlock(change, isVertical: true, position: CGPoint(x: j, y: N-(i+3)))
+                if let equal = equal {
+                    locations.append(equal)
+                }
             }
         }
     }
@@ -59,7 +139,7 @@ func findHorizontalBox(_ board:[[Int]]) {
             }
             let change = isExistEqual4Number(block)
             if let change = change {
-                let equal = checkEqualBlock(change, isVertical: false, position: CGPoint(x: j, y: N-i))
+                let equal = checkEqualBlock(change, isVertical: false, position: CGPoint(x: j, y: N-(i+2)))
                 if let equal = equal {
                     locations.append(equal)
                 }
@@ -118,5 +198,5 @@ func checkEqualBlock(_ block:[[Int]],isVertical:Bool,position:CGPoint) -> Locati
     return nil
 }
 
-print(solution([[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,4,0,0,0],[0,0,0,0,0,4,4,0,0,0],[0,0,0,0,3,0,4,0,0,0],[0,0,0,2,3,0,0,0,5,5],[1,2,2,2,3,3,0,0,0,5],[1,1,1,0,0,0,0,0,0,5]]))
+print(solution([[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,4,0,0,0],[0,0,0,0,0,4,4,0,6,0],[0,0,0,0,3,0,4,6,6,6],[0,0,0,2,3,0,0,0,5,5],[1,2,2,2,3,3,0,0,0,5],[1,1,1,0,0,0,0,0,0,5]]))
 
