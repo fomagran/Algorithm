@@ -24,21 +24,27 @@ func solution(_ board:[[Int]]) -> Int {
     N = board.count
     findVerticalBox(board)
     findHorizontalBox(board)
-    return countRemovableBlocks()
+    return countRemovableBlocks(board)
 }
 
-func countRemovableBlocks() -> Int {
+func countRemovableBlocks(_ board:[[Int]]) -> Int {
     var count:Int = 0
-    var sorted = locations.sorted{$0.position.y > $1.position.y}
+    var sorted = locations.sorted { loc1, loc2 in
+        if loc1.position.y != loc2.position.y {
+            return loc1.position.y > loc2.position.y
+        }else {
+            return loc1.position.x < loc2.position.x
+        }
+    }
+    print(sorted)
 outer:for (i,location) in sorted.enumerated() {
     if location.number == 1 {
         if location.type == 2 {
-                let filter = sorted.filter{location.position.y < $0.position.y}
-                for f in filter {
-                    let start = f.isVertical ? -1 : -2
-                    for x in start...1{
-                    if f.position.x == location.position.x+CGFloat(x) {
-                        if f.number != location.number || f.type != location.type {
+                for s in sorted {
+                    let start = s.isVertical ? 0 : -1
+                    for x in start...2{
+                    if s.position.x == location.position.x+CGFloat(x) && location.position.y < s.position.y {
+                        if s.number != location.number || s.type != location.type || s.position != location.position {
                             continue outer
                         }
                     }
@@ -47,12 +53,11 @@ outer:for (i,location) in sorted.enumerated() {
             count += 1
             sorted[i] = Location(position: CGPoint(x: -1, y: -1), number: -1, type: -1, isVertical: false)
         }else if location.type == 3 {
-                let filter = sorted.filter{location.position.y < $0.position.y}
-                for f in filter {
-                    let start = f.isVertical ? -1 : -2
-                    for x in start...1{
-                    if f.position.x == location.position.x+CGFloat(x) {
-                        if f.number != location.number || f.type != location.type {
+                for s in sorted {
+                    let start = s.isVertical ? -1 : -2
+                    for x in start...0{
+                    if s.position.x == location.position.x+CGFloat(x) && location.position.y < s.position.y {
+                        if s.number != location.number || s.type != location.type || s.position != location.position {
                             continue outer
                         }
                     }
@@ -63,12 +68,11 @@ outer:for (i,location) in sorted.enumerated() {
         }
     }else if location.number == 2 {
         if location.type == 1 {
-                let filter = sorted.filter{location.position.y < $0.position.y}
-                for f in filter {
-                    let start = f.isVertical ? -1 : -2
+                for s in sorted {
+                    let start = s.isVertical ? 0 : -1
                     for x in start...1{
-                    if f.position.x == location.position.x+CGFloat(x) {
-                        if f.number != location.number || f.type != location.type {
+                    if s.position.x == location.position.x+CGFloat(x) && location.position.y < s.position.y {
+                        if s.number != location.number || s.type != location.type || s.position != location.position {
                             continue outer
                         }
                     }
@@ -77,12 +81,11 @@ outer:for (i,location) in sorted.enumerated() {
             count += 1
             sorted[i] = Location(position: CGPoint(x: -1, y: -1), number: -1, type: -1, isVertical: false)
         }else if location.type == 2 {
-                let filter = sorted.filter{location.position.y < $0.position.y}
-                for f in filter {
-                    let start = f.isVertical ? -1 : -2
+                for s in sorted {
+                    let start = s.isVertical ? -1 : -2
                     for x in start...1{
-                    if f.position.x == location.position.x+CGFloat(x) {
-                        if f.number != location.number || f.type != location.type {
+                    if s.position.x == location.position.x+CGFloat(x) && location.position.y < s.position.y {
+                        if s.number != location.number || s.type != location.type || s.position != location.position {
                             continue outer
                         }
                     }
@@ -93,12 +96,11 @@ outer:for (i,location) in sorted.enumerated() {
         }
     }else if location.number == 3 {
         if location.type == 0 {
-            let filter = sorted.filter{location.position.y < $0.position.y}
-            for f in filter {
-                let start = f.isVertical ? -1 : -2
+            for s in sorted {
+                let start = s.isVertical ? -1 : -2
                 for x in start...2 {
-                    if f.position.x == location.position.x+CGFloat(x) {
-                        if f.number != location.number || f.type != location.type {
+                    if s.position.x == location.position.x+CGFloat(x) && location.position.y < s.position.y {
+                        if s.number != location.number || s.type != location.type {
                             continue outer
                         }
                     }
@@ -197,6 +199,3 @@ func checkEqualBlock(_ block:[[Int]],isVertical:Bool,position:CGPoint) -> Locati
     }
     return nil
 }
-
-print(solution([[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,4,0,0,0],[0,0,0,0,0,4,4,0,6,0],[0,0,0,0,3,0,4,6,6,6],[0,0,0,2,3,0,0,0,5,5],[1,2,2,2,3,3,0,0,0,5],[1,1,1,0,0,0,0,0,0,5]]))
-
