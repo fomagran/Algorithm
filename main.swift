@@ -1,14 +1,13 @@
-import Foundation
-
-func reverse(_ x: Int) -> Int {
-    let nOrP = x < 0 ? -1 : 1
-    var reverse = Array(String(x).map{String($0)}.reversed())
-    if x < 0 {
-        reverse.removeLast()
+func maxArea(_ height: [Int]) -> Int {
+    var most:Int = 0
+    for (i,h) in height.enumerated() {
+        for j in 0..<i {
+            let width = i - j
+            let height = min(h,height[j])
+            most = max(most,width*height)
+        }
     }
-    let answer = Int(Int32(reverse.joined()) ?? 0)
-    return answer * nOrP
+    return most
 }
 
-
-print(reverse(123))
+print(maxArea([1,1]))
