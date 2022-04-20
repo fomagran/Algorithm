@@ -1,13 +1,20 @@
+
 func maxArea(_ height: [Int]) -> Int {
     var most:Int = 0
-    for (i,h) in height.enumerated() {
-        for j in 0..<i {
-            let width = i - j
-            let height = min(h,height[j])
-            most = max(most,width*height)
+    var start:Int = 0
+    var end:Int = height.count - 1
+    
+    while start < end {
+        let w = end - start
+        let h = min(height[start],height[end])
+        most = max(most,w*h)
+        if height[start] > height[end]  {
+            end -= 1
+        }else {
+            start += 1
         }
     }
     return most
 }
 
-print(maxArea([1,1]))
+print(maxArea([1,8,6,2,5,4,8,3,7]))
