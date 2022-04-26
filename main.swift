@@ -1,20 +1,30 @@
+var answer:[String] = []
 
-func maxArea(_ height: [Int]) -> Int {
-    var most:Int = 0
-    var start:Int = 0
-    var end:Int = height.count - 1
+func letterCombinations(_ digits: String) -> [String] {
+    let alphabets = [["a","b","c"],["d","e","f"],["g","h","i"],["j","k","l"],["m","n","o"],["p","q","r","s"],["t","u","v"],["w","x","y","z"]]
     
-    while start < end {
-        let w = end - start
-        let h = min(height[start],height[end])
-        most = max(most,w*h)
-        if height[start] > height[end]  {
-            end -= 1
-        }else {
-            start += 1
-        }
+    if digits.count == 0 {
+        return []
     }
-    return most
+
+    if digits.count == 1 {
+        return alphabets[(Int(digits)!) - 2]
+    }
+    
+    let keypad:[[String]] = digits.map{alphabets[Int(String($0))! - 2]}
+    dfs(keypad, depth: 0, str: "")
+    return answer
 }
 
-print(maxArea([1,8,6,2,5,4,8,3,7]))
+func dfs(_ keypad:[[String]],depth:Int,str:String) {
+    if depth == keypad.count {
+        answer.append(str)
+        return
+    }
+    
+    for char in keypad[depth] {
+        dfs(keypad, depth: depth+1, str: str+char)
+    }
+}
+
+print(letterCombinations(""))
