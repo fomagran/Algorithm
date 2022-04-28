@@ -1,30 +1,74 @@
-var answer:[String] = []
-
-func letterCombinations(_ digits: String) -> [String] {
-    let alphabets = [["a","b","c"],["d","e","f"],["g","h","i"],["j","k","l"],["m","n","o"],["p","q","r","s"],["t","u","v"],["w","x","y","z"]]
-    
-    if digits.count == 0 {
-        return []
-    }
-
-    if digits.count == 1 {
-        return alphabets[(Int(digits)!) - 2]
-    }
-    
-    let keypad:[[String]] = digits.map{alphabets[Int(String($0))! - 2]}
-    dfs(keypad, depth: 0, str: "")
-    return answer
+import Darwin
+public class ListNode {
+    public var val: Int
+    public var next: ListNode?
+    public init() { self.val = 0; self.next = nil; }
+    public init(_ val: Int) { self.val = val; self.next = nil; }
+    public init(_ val: Int, _ next: ListNode?) { self.val = val; self.next = next; }
 }
 
-func dfs(_ keypad:[[String]],depth:Int,str:String) {
-    if depth == keypad.count {
-        answer.append(str)
-        return
+
+func removeNthFromEnd(_ head: ListNode?, _ n: Int) -> ListNode? {
+    var currentIndex:Int = 1
+    var currentNode:ListNode? = head
+    var sz:ListNode? = nil
+    let length:Int = countNodeList(head)
+    let N:Int = length - (n-1)
+    print(length,N)
+    
+    if length == 1 && n == 1 {
+        return nil
     }
     
-    for char in keypad[depth] {
-        dfs(keypad, depth: depth+1, str: str+char)
+    while currentNode != nil {
+        if currentIndex == N {
+            if sz == nil {
+                sz = currentNode
+                break
+            }
+            sz?.next = currentNode?.next
+            break
+        }
+        if sz == nil {
+            sz = currentNode
+        }else {
+            sz?.next = currentNode
+        }
+        currentNode = currentNode!.next
+        currentIndex += 1
     }
+    
+    return sz
 }
 
-print(letterCombinations(""))
+func countNodeList(_ head:ListNode?) -> Int {
+    var count:Int = 0
+    var current:ListNode? = head
+    while current != nil {
+        current = current!.next
+        count += 1
+    }
+    return count
+}
+
+
+var head:ListNode? = ListNode(1)
+
+for i in 2...5 {
+    var node:ListNode? = head
+    while node?.next != nil {
+        node = node!.next!
+        print(i,node?.val)
+    }
+    node?.next = ListNode(i)
+    head = node
+}
+
+var remove = removeNthFromEnd(head, 2)
+
+while remove != nil {
+    print(remove?.val)
+    remove = remove?.next
+}
+
+
