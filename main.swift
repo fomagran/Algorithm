@@ -1,4 +1,3 @@
-import Darwin
 public class ListNode {
     public var val: Int
     public var next: ListNode?
@@ -14,25 +13,20 @@ func removeNthFromEnd(_ head: ListNode?, _ n: Int) -> ListNode? {
     var sz:ListNode? = nil
     let length:Int = countNodeList(head)
     let N:Int = length - (n-1)
-    print(length,N)
     
-    if length == 1 && n == 1 {
-        return nil
+    if N == 1 {
+        return head?.next
     }
     
     while currentNode != nil {
         if currentIndex == N {
-            if sz == nil {
-                sz = currentNode
-                break
-            }
-            sz?.next = currentNode?.next
+            append(currentNode?.next, &sz)
             break
         }
         if sz == nil {
-            sz = currentNode
+            sz = ListNode(head!.val,nil)
         }else {
-            sz?.next = currentNode
+            append(ListNode(currentNode!.val,nil), &sz)
         }
         currentNode = currentNode!.next
         currentIndex += 1
@@ -40,6 +34,15 @@ func removeNthFromEnd(_ head: ListNode?, _ n: Int) -> ListNode? {
     
     return sz
 }
+
+func append(_ add:ListNode?,_ root:inout ListNode?) {
+    var node:ListNode? = root
+    while node?.next != nil {
+        node = node?.next!
+    }
+    node?.next = add
+}
+
 
 func countNodeList(_ head:ListNode?) -> Int {
     var count:Int = 0
@@ -53,22 +56,13 @@ func countNodeList(_ head:ListNode?) -> Int {
 
 
 var head:ListNode? = ListNode(1)
+append(ListNode(2),&head)
+//append(ListNode(3),&head)
+//append(ListNode(4),&head)
+//append(ListNode(5),&head)
 
-for i in 2...5 {
-    var node:ListNode? = head
-    while node?.next != nil {
-        node = node!.next!
-        print(i,node?.val)
-    }
-    node?.next = ListNode(i)
-    head = node
-}
+
 
 var remove = removeNthFromEnd(head, 2)
-
-while remove != nil {
-    print(remove?.val)
-    remove = remove?.next
-}
 
 
