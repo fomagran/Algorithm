@@ -1,66 +1,33 @@
-public class ListNode {
-    public var val: Int
-    public var next: ListNode?
-    public init() { self.val = 0; self.next = nil; }
-    public init(_ val: Int) { self.val = val; self.next = nil; }
-    public init(_ val: Int, _ next: ListNode?) { self.val = val; self.next = next; }
-}
-
-
-func removeNthFromEnd(_ head: ListNode?, _ n: Int) -> ListNode? {
-    var currentIndex:Int = 1
-    var currentNode:ListNode? = head
-    var sz:ListNode? = nil
-    let N:Int = removeStartIndex()
+func findMedianSortedArrays(_ nums1: [Int], _ nums2: [Int]) -> Double {
+    var point1:Int = 0
+    var point2:Int = 0
+    let allCount = nums1.count + nums2.count
+    let medianIndex:[Int] = allCount%2 == 0 ? [allCount/2-1,allCount/2] : [allCount/2]
+    var mergeArray:[Int] = []
     
-    if N == 1 {
-        return head?.next
-    }
     
-    while currentNode != nil {
-        if currentIndex == N {
-            append(currentNode?.next)
-            return sz
+    while point1 < nums1.count || point2 < nums2.count {
+        if point1 == nums1.count {
+            mergeArray.append(contentsOf: nums2[point2..<nums2.count])
+            break
         }
-        if sz == nil {
-            sz = ListNode(head!.val,nil)
+        
+        if point2 == nums2.count {
+            mergeArray.append(contentsOf: nums1[point1..<nums1.count])
+            break
+        }
+        
+        mergeArray.append(min(nums1[point1],nums2[point2]))
+        
+        if nums1[point1] < nums2[point2] {
+            point1 += 1
         }else {
-            append(ListNode(currentNode!.val,nil))
+            point2 += 1
         }
-        currentNode = currentNode!.next
-        currentIndex += 1
     }
-    
-    func append(_ add:ListNode?) {
-        var node:ListNode? = sz
-        while node?.next != nil {
-            node = node?.next!
-        }
-        node?.next = add
-    }
-    
-    func removeStartIndex() -> Int {
-        var count:Int = 0
-        var current:ListNode? = head
-        while current != nil {
-            current = current!.next
-            count += 1
-        }
-        return count - (n-1)
-    }
-    
-    return sz
+
+    return medianIndex.map{Double(mergeArray[$0])}.reduce(0,+)/Double(medianIndex.count)
 }
 
 
-var head:ListNode? = ListNode(1)
-
-//append(ListNode(3),&head)
-//append(ListNode(4),&head)
-//append(ListNode(5),&head)
-
-
-
-var remove = removeNthFromEnd(head, 2)
-
-
+print(findMedianSortedArrays([1,3,5], [2,4,8]))
