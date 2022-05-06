@@ -1,23 +1,27 @@
-func generateParenthesis(_ n: Int) -> [String] {
-    var answer:[String] = []
-    
-    func add(_ str:String,_ openCount:Int,_ closeCount:Int) {
-        if str.count == n*2 {
-            answer.append(str)
-            return
-        }
+class Solution {
+    func nextPermutation(_ nums: inout [Int]) {
         
-        if openCount < n {
-            add(str+"(", openCount+1, closeCount)
-        }
-        
-        if openCount > closeCount {
-            add(str+")", openCount,closeCount+1)
-        }
     }
-    
-    add("(",1,0)
-    return answer
 }
 
-print(generateParenthesis(1))
+/*
+1,2,3,4,5
+1,2,3,5,4
+1,2,4,3,5
+1,2,4,5,3
+1,2,5,3,4
+1,2,5,4,3
+1,3,2,5,4
+1,3,2,4,5
+1,3,4,2,5
+1,3,4,5,2
+
+//끝에서 순차적으로 작아질 경우
+1,3,5,4,2
+//바로 앞 번째 숫자보다 큰 숫자가 앞으로 순차적으로 커지게 배치한다.
+1,4,2,3,5
+
+
+//만약 시작부터 순차적으로 작아졌을 경우는 끝이므로 sort로 처음으로 만들어 준다.
+1,2,3,4,5
+*/
