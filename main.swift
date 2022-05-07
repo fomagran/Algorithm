@@ -1,27 +1,22 @@
-class Solution {
-    func nextPermutation(_ nums: inout [Int]) {
-        
+func nextPermutation(_ nums: inout [Int]) {
+    var lastLessIndex:Int = -1
+    var lastBiggerIndex:Int = -1
+    for i in 0..<nums.count-1 {
+        if nums[i] < nums[i+1] {
+            lastLessIndex = i
+        }
     }
+    if lastLessIndex < 0 {
+        nums.reverse()
+        return
+    }
+    
+    for j in lastLessIndex+1..<nums.count {
+        if nums[j] > nums[lastLessIndex] {
+            lastBiggerIndex = j
+        }
+    }
+    
+    nums.swapAt(lastLessIndex, lastBiggerIndex)
+    nums = nums[0...lastLessIndex] + nums[lastLessIndex+1..<nums.count].reversed()
 }
-
-/*
-1,2,3,4,5
-1,2,3,5,4
-1,2,4,3,5
-1,2,4,5,3
-1,2,5,3,4
-1,2,5,4,3
-1,3,2,5,4
-1,3,2,4,5
-1,3,4,2,5
-1,3,4,5,2
-
-//끝에서 순차적으로 작아질 경우
-1,3,5,4,2
-//바로 앞 번째 숫자보다 큰 숫자가 앞으로 순차적으로 커지게 배치한다.
-1,4,2,3,5
-
-
-//만약 시작부터 순차적으로 작아졌을 경우는 끝이므로 sort로 처음으로 만들어 준다.
-1,2,3,4,5
-*/
