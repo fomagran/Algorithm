@@ -1,25 +1,40 @@
-func longestValidParentheses(_ s: String) -> Int {
-    var openIndex:[Int] = []
-    let smap = s.map{String($0)}
-    var maxLength:Int = -1
-    var current:Int = 0
+public class ListNode {
+    public var val: Int
+    public var next: ListNode?
+    public init() { self.val = 0; self.next = nil; }
+    public init(_ val: Int) { self.val = val; self.next = nil; }
+    public init(_ val: Int, _ next: ListNode?) { self.val = val; self.next = next; }
+}
 
-    for (i,char) in smap.enumerated() {
-        if char == "(" {
-            openIndex.append(i-current)
+func mergeKLists(_ lists: [ListNode?]) -> ListNode? {
+    var answer:ListNode? = nil
+    var current:ListNode? = nil
+    var first:ListNode? = nil
+    var last:ListNode? = nil
+    
+    for list in lists {
+        if answer == nil {
+            appendAll(list)
+            continue
         }else {
-            if !openIndex.isEmpty {
-                let last:Int = openIndex.removeLast()
-                maxLength = max(maxLength,i-last)
-                current = i-last+1
-                continue
-            }
+            
         }
-        current = 0
     }
-
-    return maxLength+1
+    
+    func appendAll(_ l:ListNode?) {
+        var current = l
+        while current != nil {
+            if let _ = answer {
+                answer?.next = ListNode(current!.val)
+                answer = answer?.next
+            }else {
+                answer = current
+            }
+            current = current?.next
+        }
+    }
+    
+    return answer
 }
 
 
-print(longestValidParentheses("(()()"))
