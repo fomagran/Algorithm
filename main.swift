@@ -1,25 +1,15 @@
-func combinationSum(_ candidates: [Int], _ target: Int) -> [[Int]] {
-    var answer:[[Int]] = []
-    let sorted = candidates.sorted()
+func firstMissingPositive(_ nums: [Int]) -> Int {
+    var dic:[Int:Bool] = [:]
     
-    func dfs(_ depth:Int,_ current:[Int],_ sum:Int) {
-        if sum == target {
-            answer.append(current)
-            return
-        }
-        
-        if sum > target {
-            return
-        }
-        
-        for i in depth..<sorted.count {
-            dfs(i,current+[sorted[i]], sum + sorted[i])
-        }
+    nums.forEach {
+        dic[$0] = true
     }
     
-    dfs(0,[], 0)
-    
-    return answer
+    var current = 1
+    while dic[current] != nil {
+        current += 1
+    }
+    return current
 }
 
-print(combinationSum([2], 1))
+print(firstMissingPositive([1,2,0]))
