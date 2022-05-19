@@ -1,29 +1,22 @@
 func swapPairs(_ head: ListNode?) -> ListNode? {
-       if head?.next == nil { return head }
-       var current:ListNode? = ListNode(head!.next!.val,ListNode(head!.val))
-       var root:ListNode? = current
-       var array:[Int] = []
-       var h:ListNode? = head
-   
+        if head?.next == nil { return head }
+        var current:ListNode? = ListNode(head!.next!.val,ListNode(head!.val))
+        var root:ListNode? = current
+        var hPast:ListNode? = head?.next?.next
+        var h:ListNode? = head?.next?.next?.next
+    
+        current = current?.next
 
-       while h != nil {
-           array.append(h!.val)
-           h = h?.next
-       }
-     
-       var x = 3
-       
-       current = current?.next
-       
-       while x < array.count {
-           current?.next = ListNode(array[x],ListNode(array[x-1]))
-           current = current?.next?.next
-           x += 2
-       }
-       
-       if array.count%2 == 1 {
-           current?.next = ListNode(array[array.count-1])
-       }
-       
-       return root
-   }
+        while h != nil {
+            current?.next = ListNode(h!.val,ListNode(hPast!.val))
+            hPast = hPast?.next?.next
+            h = h?.next?.next
+            current = current?.next?.next
+        }
+        
+        if hPast != nil {
+            current?.next = ListNode(hPast!.val)
+        }
+        
+        return root
+    }
