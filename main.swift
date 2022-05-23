@@ -1,64 +1,23 @@
-public class ListNode {
-    public var val: Int
-    public var next: ListNode?
-    public init() { self.val = 0; self.next = nil; }
-    public init(_ val: Int) { self.val = val; self.next = nil; }
-    public init(_ val: Int, _ next: ListNode?) { self.val = val; self.next = next; }
-}
+//반드시 끝에 도달할 수 있도록 되어 있는가? (그렇지 않다면 무엇을 반환하는가?)
+//시작할 땐 무조건 1칸 뛰는건가?
 
-func reverseKGroup(_ head: ListNode?, _ k: Int) -> ListNode? {
-    let total:Int = countNode(head)
+
+func jump(_ nums: [Int]) -> Int {
+    var current:Int = nums.count - 1
     var count:Int = 0
-    var node:ListNode? = nil
-    var start:ListNode? = head
-    var root:ListNode? = nil
     
-    func recursion(_ count:Int,_ n:ListNode?) {
-        if count == k { return }
-        start = n?.next
-        recursion(count+1,n?.next)
-
-        if node == nil {
-            node = n
-            root = node
-        }else {
-            node?.next = ListNode(n!.val)
-            node = node?.next
+    while current != 0 {
+        for i in 0..<current{
+            if nums[i] >= current-i {
+                current = i
+                count += 1
+                break
+            }
         }
     }
     
-    while count + k <= total {
-        recursion(0, start)
-        count += k
-    }
-    
-    node?.next = start
-    
-    return root
-}
-
-func countNode(_ head:ListNode?) -> Int {
-    var count:Int = 0
-    var node:ListNode? = head
-    
-    while node != nil {
-        count += 1
-        node = node?.next
-    }
     return count
 }
 
-let head = ListNode(1)
-head.next = ListNode(2)
-head.next?.next = ListNode(3)
-//head.next?.next?.next = ListNode(4)
-//head.next?.next?.next?.next = ListNode(5)
-//head.next?.next?.next?.next?.next = ListNode(6)
-//head.next?.next?.next?.next?.next?.next = ListNode(7)
 
-var n:ListNode? = reverseKGroup(head, 2)
-
-while n != nil {
-    print(n!.val)
-    n = n?.next
-}
+print(jump([2,3,1,1,4]))
