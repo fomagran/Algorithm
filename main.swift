@@ -1,23 +1,19 @@
-//반드시 끝에 도달할 수 있도록 되어 있는가? (그렇지 않다면 무엇을 반환하는가?)
-//시작할 땐 무조건 1칸 뛰는건가?
+//func rotate(_ matrix: inout [[Int]]) {
+//    for (i,mat) in matrix.enumerated() {
+//        let col:Int = matrix.count-1-i
+//        for (j,m) in mat.enumerated(){
+//            matrix[j][col] = m
+//        }
+//    }
+//}
 
-
-func jump(_ nums: [Int]) -> Int {
-    var current:Int = nums.count - 1
-    var count:Int = 0
-    
-    while current != 0 {
-        for i in 0..<current{
-            if nums[i] >= current-i {
-                current = i
-                count += 1
-                break
-            }
-        }
+func rotate(_ matrix: inout [[Int]]) {
+    let matrixCopy = matrix
+    for i in 0..<matrixCopy.count {
+        matrix[i] = matrixCopy.map{$0[i]}.reversed()
     }
-    
-    return count
 }
 
+var m = [[1,2,3],[4,5,6],[7,8,9]]
 
-print(jump([2,3,1,1,4]))
+rotate(&m)
