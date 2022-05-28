@@ -1,14 +1,16 @@
-func groupAnagrams(_ strs: [String]) -> [[String]] {
-    var dic:[String:[String]] = [:]
-    for str in strs {
-        let sort = str.map{String($0)}.sorted().joined()
-        if dic[sort] == nil {
-            dic[sort] = [str]
+func maxSubArray(_ nums: [Int]) -> Int {
+    var current:Int = Int.min
+    var maxNum:Int = Int.min
+    
+    for n in nums {
+        if current < 0 && current < n {
+            current = n
         }else {
-            dic[sort]!.append(str)
+            current += n
         }
+        maxNum = max(maxNum,current)
     }
-    return Array(dic.values)
+    return maxNum
 }
 
-groupAnagrams(["eat","tea","tan","ate","nat","bat"])
+print(maxSubArray([1]))
