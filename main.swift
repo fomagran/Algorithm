@@ -1,19 +1,18 @@
-func canJump(_ nums: [Int]) -> Bool {
-    var from:Int = nums.count-1
+func merge(_ intervals: [[Int]]) -> [[Int]] {
+    let sorted:[[Int]] = intervals.sorted{$0[1] > $1[1]}
+    var answer:[[Int]] = []
     
-    while from > 0 {
-        var check:Bool = false
-        for i in stride(from: from-1, through: 0, by: -1){
-            if nums[i] >= from - i{
-                check = true
-                from = i
-            }
-        }
-        if !check {
-            return false
+outer:for itv in sorted {
+    for (i,newItv) in answer.enumerated() {
+        if newItv[0] <= itv[1] {
+            answer[i] = [min(itv[0],newItv[0]),newItv[1]]
+            continue outer
         }
     }
-    return true
+
+    answer.append(itv)
+}
+    return answer
 }
 
-print(canJump([0]))
+print(merge([[1,3],[2,6],[8,10],[15,18]]))
