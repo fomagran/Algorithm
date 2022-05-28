@@ -1,16 +1,19 @@
-func maxSubArray(_ nums: [Int]) -> Int {
-    var current:Int = Int.min
-    var maxNum:Int = Int.min
+func canJump(_ nums: [Int]) -> Bool {
+    var from:Int = nums.count-1
     
-    for n in nums {
-        if current < 0 && current < n {
-            current = n
-        }else {
-            current += n
+    while from > 0 {
+        var check:Bool = false
+        for i in stride(from: from-1, through: 0, by: -1){
+            if nums[i] >= from - i{
+                check = true
+                from = i
+            }
         }
-        maxNum = max(maxNum,current)
+        if !check {
+            return false
+        }
     }
-    return maxNum
+    return true
 }
 
-print(maxSubArray([1]))
+print(canJump([0]))
