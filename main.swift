@@ -1,27 +1,59 @@
 /*
- search matrix's each row first value, last value
- if target is between first value and last value
- search above row's all element and if target < element stop for loop
- return false
- or meet the target value rreturn true
+ matrix wrap
+ prevent to x < 0 or x > matrix.count
+ or y < 0 or y > matrix.count
+ -----
+ |    |
+ |    |
+ |    |
+ |    |
+ |    |
+ ------
+ if matrix[y][x] == 0 {
+    matrix[y-1][x] = 0
+    matrix[y][x-1] = 0
+    matrix[y+1][x] = 0
+    matrix[y][x+1] = 0
+ }
+ 
+ if matrix[x][y] == 0 {
+    matrix[y-1][x] = 0
+    matrix[y][x-1] = 0
+    matrix[y+1][x] = 0
+    matrix[y][x+1] = 0
+ }
+ 
  */
 
-func searchMatrix(_ matrix: [[Int]], _ target: Int) -> Bool {
-    for m in matrix {
-        if m[0]...m[m.count-1] ~= target {
-            for n in m {
-                if n == target {
-                    return true
-                }
-                
-                if n > target {
-                    return false
-                }
+
+func setZeroes(_ matrix: inout [[Int]]) {
+    let matrixCopy:[[Int]] = matrix
+    for y in 0..<matrix.count {
+        for x in 0..<matrix[0].count {
+            if matrixCopy[y][x] == 0 {
+                changeAllRow(x)
+                changeAllColumn(y)
             }
-            return false
         }
     }
-    return false
+    
+    func changeAllRow(_ x:Int) {
+        for i in 0..<matrix.count {
+            matrix[i][x] = 0
+        }
+    }
+
+    func changeAllColumn(_ y:Int) {
+        for i in 0..<matrix[0].count {
+            matrix[y][i] = 0
+        }
+    }
 }
 
-print(searchMatrix([[1,3]], 3))
+
+
+var matrix:[[Int]] = [[0,1,2,0],[3,4,5,2],[1,3,1,5]]
+print(setZeroes(&matrix),matrix)
+
+
+
