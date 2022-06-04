@@ -1,24 +1,27 @@
-func minPathSum(_ grid: [[Int]]) -> Int {
-    var gridCopy:[[Int]] = grid
-    let m:Int = grid.count-1
-    let n:Int = grid[0].count-1
-    
-    for i in 0...m {
-        for j in 0...n {
-            
-            var current = gridCopy[i][j]
-            
-            if i > 0 && j > 0 {
-                current += min(gridCopy[i-1][j],gridCopy[i][j-1])
-            }else if i > 0 && j == 0 {
-                current += gridCopy[i-1][j]
-            }else if j > 0 && i == 0 {
-                current += gridCopy[i][j-1]
+/*
+ search matrix's each row first value, last value
+ if target is between first value and last value
+ search above row's all element and if target < element stop for loop
+ return false
+ or meet the target value rreturn true
+ */
+
+func searchMatrix(_ matrix: [[Int]], _ target: Int) -> Bool {
+    for m in matrix {
+        if m[0]...m[m.count-1] ~= target {
+            for n in m {
+                if n == target {
+                    return true
+                }
+                
+                if n > target {
+                    return false
+                }
             }
-            
-            gridCopy[i][j] = current
+            return false
         }
     }
-    
-    return gridCopy[m][n]
+    return false
 }
+
+print(searchMatrix([[1,3]], 3))
