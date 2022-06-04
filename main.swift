@@ -1,33 +1,46 @@
 /*
- search matrix's each row first value, last value
- if target is between first value and last value
- search above row's all element and if target < element stop for loop
- return false
- or meet the target value rreturn true
+I'll make 3 arrays
+ 
+ red white blue
+ [0,0,0,0] [1,1,1] [2,2]
+ return red + white + blue
+ 
+ it takes O(n) time Complexity
+ 
+ it also take O(n) space Complexity
+ 
+ 
  */
 
-func searchMatrix(_ matrix: [[Int]], _ target: Int) -> Bool {
-    for m in matrix {
-        if m[0]...m[m.count-1] ~= target {
-            
-            var l:Int = 0
-            var r:Int = m.count-1
-            
-            while l < r {
-                let middle:Int = (l+r)/2
-                if m[l]...m[middle] ~= target {
-                    r = middle
-                }else {
-                    l = middle+1
-                }
-            }
-            
-            return m[l] == target
+func sortColors(_ nums: inout [Int]) {
+    
+    var red:[Int] = []
+    var white:[Int] = []
+    var green:[Int] = []
+    for i in 0..<nums.count {
+        if nums[i] == 0 {
+            red.append(0)
+            continue
+        }
+        
+        if nums[i] == 1 {
+            white.append(1)
+            continue
+        }
+        
+        if nums[i] == 2 {
+            green.append(2)
+            continue
         }
     }
-    return false
+    
+    nums = red + white + green
 }
 
 
+func sortColors2(_ nums: inout [Int]) {
+    nums.sort{$0 < $1}
+}
+var nums =  [2,0,2,1,1,0]
+print(sortColors(&nums),nums)
 
-print(searchMatrix([[1,3]], 3))
