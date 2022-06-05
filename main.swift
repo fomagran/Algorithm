@@ -1,46 +1,18 @@
 /*
-I'll make 3 arrays
- 
- red white blue
- [0,0,0,0] [1,1,1] [2,2]
- return red + white + blue
- 
- it takes O(n) time Complexity
- 
- it also take O(n) space Complexity
- 
- 
+
  */
 
-func sortColors(_ nums: inout [Int]) {
-    
-    var red:[Int] = []
-    var white:[Int] = []
-    var green:[Int] = []
-    for i in 0..<nums.count {
-        if nums[i] == 0 {
-            red.append(0)
-            continue
-        }
-        
-        if nums[i] == 1 {
-            white.append(1)
-            continue
-        }
-        
-        if nums[i] == 2 {
-            green.append(2)
-            continue
+func subsets(_ nums: [Int]) -> [[Int]] {
+    var answer:[[Int]] = []
+    func dfs(current:[Int],index:Int) {
+        answer.append(current)
+        for i in index..<nums.count {
+            dfs(current:current+[nums[i]],index:i+1)
         }
     }
     
-    nums = red + white + green
+    dfs(current: [], index: 0)
+    return answer
 }
 
-
-func sortColors2(_ nums: inout [Int]) {
-    nums.sort{$0 < $1}
-}
-var nums =  [2,0,2,1,1,0]
-print(sortColors(&nums),nums)
-
+print(subsets([1,2,3]))
