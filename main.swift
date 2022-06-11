@@ -1,67 +1,60 @@
 /*
+ ignore white space
+ '-' negative, '+' positive
+ stop non digit
+ convert integer
+ check -2^31 ~ 2^31-1 if the number is out of range return -2^31(less) or 2^31-1(greater)
+ 
+ */
 
-we have a index
+import Darwin
 
-P 0
-A 1
-Y 2
-P 3
+print(Int("s"))
 
-if we get the 3 index
+func myAtoi(_ s: String) -> Int {
+    var record:String = ""
+    //2
+    var negative:String = ""
+    var trimS = s
 
-and we gonna reverse that
+    let stringMap:[Character] = s.map{$0}
+    
+    for c in stringMap {
+        if c == "-" || c == "+"  {
+            if Int(record) == nil && negative == "" {
+            negative = String(c)
+                continue
+            }else {
+                break
+            }
+        }
+        
+        //1
+        if c == " " {
+            if record == "" && negative == "" {
+                continue
+            }
+            break
+        }
+        
+        //3
+        if Int(String(c)) == nil {
+            break
+        }
+        
+        record += String(c)
+    }
+    
+    let min:Double = -pow(2, 31)
+    let max:Double = pow(2,31)-1
+    
+    let answer:Double = negative != "-" ? (Double(record) ?? 0) : -(Double(record) ?? 0)
+    
+    if min...max ~= answer {
+        return Int(answer)
+    }
+    
+    return answer < min ? Int(min) : Int(max)
+}
 
-P  I
-A L
-YA
-P
-
-if we get the zero index
-
-and we gonna plus that equal index line
-
-we need numRows string
-
-if numrows is 4
-
-we need
-
-str0, str1, str2, str3
-
-P 0 str0 + P
-A 1 str1 + A
-Y 2 str2 + Y
-P 3 str3 + P
-
-A 2 str2 + A str2 is YA
-L 1 str1 + L str1 is AL
-I 0 str0 + I str0 is PI
-
-... until we get the string's length
-
-return str0 + str1 + str2 + str3
-
-time Complexity = O(n)
-
-
-*/
-
-func convert(_ s: String, _ numRows: Int) -> String {
-    if numRows == 1 { return s}
-      let stringMap:[Character] = s.map{$0}
-      var strings:[String] = Array(repeating:String(),count:numRows)
-      var index:Int = 0
-      var isReversed:Bool = false
-      for c in stringMap {
-          if index == 0 {
-              isReversed = false
-          }else if index == numRows-1 {
-              isReversed = true
-          }
-          strings[index] += String(c)
-          index += isReversed ? -1 : 1
-      }
-      return strings.reduce("",+)
-  }
-
-print(convert("PAYPALISHIRING", 2))
+print(myAtoi("  +  413"))
