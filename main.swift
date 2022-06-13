@@ -28,27 +28,29 @@ func fourSum(_ nums: [Int], _ target: Int) -> [[Int]] {
     if nums.count < 4 { return [] }
     if nums.count == 4 { return nums.reduce(0,+) == target ? [nums] : [] }
     let sorted = nums.sorted(by: <)
-    var result:[[Int]] = []
+    var answer:Set<[Int]> = Set()
     
-    for a in 0..<nums.count {
-        for b in a+1..<nums.count {
-            for c in b+1..<nums.count {
-                for d in c+1..<nums.count {
-                    let sum = sorted[a] + sorted[b] + sorted[c] + sorted[d]
-                    if sum == target {
-                        result.append([sorted[a],sorted[b],sorted[c],sorted[d]])
-                        break
-                    }
-                    
-                    if sum > target {
-                        break
-                    }
+    for a in 0..<nums.count-3 {
+        for b in a+1..<nums.count-2 {
+            var c = b+1
+            var d = nums.count-1
+            while c < d {
+                let sum = sorted[a] + sorted[b] + sorted[c] + sorted[d]
+                if sum == target {
+                    answer.insert([sorted[a],sorted[b],sorted[c],sorted[d]])
+                }
+                
+                if sum > target {
+                    d -= 1
+                }else {
+                    c += 1
                 }
             }
         }
     }
     
-    return result
+    return Array(answer)
 }
 
-print(fourSum([1,0,-1,0,-2,2], 0))
+print(fourSum([-3,-2,-1,0,0,1,2,3]
+              ,0))
