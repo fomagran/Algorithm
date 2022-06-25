@@ -5,35 +5,33 @@ func solveNQueens(_ n: Int) -> [[String]] {
     
     var answer:[[String]] = []
     let nDots:[String] = Array(repeating: ".", count: n)
+    let nChecked:[Bool] = Array(repeating:false, count: n)
     
-    func dfs(_ depth:Int,_ current:[String],_ enable:[[Bool]]) {
+    func dfs(_ depth:Int,_ current:[[String]],_ enable:[[Bool]]) {
         if depth == n {
-            answer.append(current)
+            answer.append(current.map{$0.joined()})
             return
         }
         
-        for i in 0..<n {
-            if enable[depth][i] {
+        for x in 0..<n {
+            if enable[depth][x] {
                 var newEnable = enable
-                for j in 0..<n {
-                    newEnable[j][i] = false
-                    if j == depth {
-                        let allChecked = Array(repeating:false, count: n)
-                        newEnable[j] = allChecked
+                for y in 0..<n {
+                    newEnable[y][x] = false
+                    if y == depth {
+                        newEnable[y] = nChecked
                     }
-                    if i-abs(depth-j) >= 0 {
-                        newEnable[j][i-abs(depth-j)] = false
+                    if x-abs(depth-y) >= 0 {
+                        newEnable[y][x-abs(depth-y)] = false
                     }
                     
-                    if i+(abs(depth-j)) < n {
-                        newEnable[j][i+(abs(depth-j))] = false
+                    if x+(abs(depth-y)) < n {
+                        newEnable[y][x+(abs(depth-y))] = false
                     }
                 }
-                var newCurrent = current
                 var newDots = nDots
-                newDots[i] = "Q"
-                newCurrent.append(newDots.joined())
-                dfs(depth+1,newCurrent, newEnable)
+                newDots[x] = "Q"
+                dfs(depth+1,current + [newDots], newEnable)
             }
         }
     }
