@@ -1,36 +1,79 @@
-func minDistance(_ word1: String, _ word2: String) -> Int {
-    if word1.isEmpty || word2.isEmpty {
-        return word1.isEmpty ? word2.count : word1.count
+func minWindow(_ s: String, _ t: String) -> String {
+    if s.count < t.count {
+        return ""
     }
     
-    let word1Map:[String] = [""] + word1.map{String($0)}
-    let word2Map:[String] = [""] + word2.map{String($0)}
+    let sMap:[String] = s.map{String($0)}
+    let tMap:[String] = t.map{String($0)}
+    var sDic:[String:Int] = [:]
+    var tDic:[String:Int] = [:]
+    var minCount:Int = Int.max
+    var minRange:(Int,Int) = (-1,-1)
     
-    var dp:[[Int]] = Array(repeating:Array(repeating:0, count: word1Map.count),count:word2Map.count)
-    
-    dp[0] = (0..<word1Map.count).map{$0}
-    
-    for i in 0..<word2Map.count {
-        dp[i][0] = i
+    for c in sMap {
+        sDic[c] = (sDic[c] ?? 0) + 1
     }
     
-    for y in 1..<word2Map.count {
-        for x in 1..<word1Map.count {
-            if word2Map[y] == word1Map[x] {
-                dp[y][x] = dp[y-1][x-1]
-            }else {
-                let min:Int = min(min(dp[y-1][x-1],dp[y-1][x]),dp[y][x-1])
-                dp[y][x] = min + 1
+    for c in tMap {
+        tDic[c] = (tDic[c] ?? 0) + 1
+    }
+    
+    func findShortestSubstring(_ left:Int,_ right:Int,_ sDic:[String:Int]) {
+
+        if left > right {
+            return
+        }
+        
+        let leftkey:String = sMap[left]
+        let rightkey:String = sMap[right]
+        
+        if sDic[leftkey]! - 1 >= (tDic[leftkey] ?? 0) {
+            var newDic = sDic
+            newDic[leftkey]! -= 1
+            if newDic[leftkey]! == 0 {
+                newDic[leftkey] = nil
             }
+            findShortestSubstring(left+1, right,newDic)
+        }
+    
+        if sDic[rightkey]! - 1 >= (tDic[rightkey] ?? 0) {
+            var newDic = sDic
+            newDic[rightkey]! -= 1
+            if newDic[rightkey]! == 0 {
+                newDic[rightkey] = nil
+            }
+            findShortestSubstring(left, right-1,newDic)
+        }
+        
+        if minCount > right-left+1{
+//            if check(sDic)  {
+                minCount = right-left+1
+                minRange = (left,right)
+//            }
         }
     }
     
-    for d in dp {
-        print(d)
+    func check(_ dic:[String:Int]) -> Bool {
+        for (key,value) in tDic {
+            if dic[key] == nil {
+                return false
+            }
+            
+            if dic[key]! - value < 0 {
+                return false
+            }
+        }
+        return true
     }
     
-    return dp.last?.last ?? 0
+    findShortestSubstring(0, s.count-1,sDic)
+    
+    return minRange.0 >= 0 ? sMap[minRange.0...minRange.1].joined() : ""
 }
 
-print(minDistance("a"
-                  ,"b"))
+
+
+print(minWindow("cgklivwehljxrdzpfdqsapogwvjtvbzahjnsejwnuhmomlfsrvmrnczjzjevkdvroiluthhpqtffhlzyglrvorgnalk"
+                ,"mqfff"))
+
+
