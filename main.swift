@@ -14,6 +14,14 @@ public class TreeNode {
 
 
 func inorderTraversal(_ root: TreeNode?) -> [Int] {
-        
+    
 }
 
+let test:[Int?] = [1,2,nil,3,4,nil,5,6]
+let r = TreeNode(0)
+
+var current = 0
+
+while current < test.count {
+    
+}
