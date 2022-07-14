@@ -1,35 +1,28 @@
 func findKthLargest(_ nums: [Int], _ k: Int) -> Int {
-    var stack: [Int] = []
+    var quickArray:[Int] = nums
+    var K = nums.count - k
+    
+    func quickSelect(_ l:Int,_ r:Int) -> Int {
+        let pivot:Int = quickArray[r]
+        var p:Int = l
+        
+        for i in l..<r {
+            if quickArray[i] <= pivot {
+                quickArray.swapAt(p,i)
+                p += 1
+            }
+        }
+        
+        quickArray.swapAt(p,r)
 
-  for num in nums {
-    if stack.isEmpty {
-        stack.append(num)
-        continue
-    }
-
-    var left: Int = 0
-    var right: Int = stack.count - 1
-
-    while left <= right {
-        let mid: Int = (left + right)/2
-        let midValue: Int = stack[mid]
-
-       if num == midValue {
-            left = mid
-            break
-        } else if num > midValue {
-            right = mid - 1
-        } else {
-            left = mid + 1
+        if p == K {
+            return quickArray[p]
+        }else if p > K {
+            return quickSelect(l,p-1)
+        }else {
+            return quickSelect(p+1,r)
         }
     }
 
-    stack.insert(num,at:left)
-
-    if stack.count > k {
-        stack.removeLast()
-    }
-  }
-
-  return stack.last!
+    return quickSelect(0,nums.count-1)
 }
