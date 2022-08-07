@@ -1,28 +1,18 @@
 func largestRectangleArea(_ heights: [Int]) -> Int {
     var maxArea: Int = 0
-    for i in 0..<heights.count {
-        let current: Int = heights[i]
-        var left = i-1
-        var right = i+1
+    var stack: [Int] = []
+    let heights = heights + [0]
+    
+    for (i,height) in heights.enumerated() {
+        let current: Int = height
         
-        while left >= 0 {
-            if heights[left] < current {
-                break
-            }
-            left -= 1
+        while !stack.isEmpty && current <= heights[stack.last!] {
+            let last = stack.removeLast()
+            let lastHeight = heights[last]
+            let area = lastHeight * (i - (stack.last ?? -1) - 1)
+            maxArea = max(maxArea,area)
         }
-        
-        while right <= heights.count - 1 {
-            if heights[right] < current {
-                break
-            }
-            right += 1
-        }
-        
-        left += 1
-        right -= 1
-        
-        maxArea = max(maxArea,current*(right-left+1))
+        stack.append(i)
     }
     
     return maxArea
