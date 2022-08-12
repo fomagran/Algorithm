@@ -1,45 +1,28 @@
-func topKFrequent(_ nums: [Int], _ k: Int) -> [Int] {
-    var countDic: [Int:Int] = [:]
+func productExceptSelf(_ nums: [Int]) -> [Int] {
+    var answer: [Int] = []
+    var product: Int = 1
+    var zeroCount: Int = 0
     
     for num in nums {
-        countDic[num,default:0] += 1
-    }
-    
-    var kSizeArr: [(Int,Int)] = Array(repeating: (-1,Int.min), count: k)
-    
-    for num in countDic {
-        if kSizeArr.first!.1 >= num.value {
-            continue
-        }
-        
-        kSizeArr.removeFirst()
-        
-        if kSizeArr.isEmpty || kSizeArr.last!.1 <= num.value {
-            kSizeArr.append((num.key,num.value))
-            continue
-        }
-        
-        var left: Int = 0
-        var right: Int = kSizeArr.count - 1
-        
-        while left <= right {
-            let mid = (left + right)/2
-            let midValue = kSizeArr[mid].1
-            
-            if num.value == midValue {
-                left = mid
-                break
-            } else if num.value < midValue {
-                right = mid - 1
-            } else {
-                left = mid + 1
+        if num == 0 {
+            zeroCount += 1
+            if zeroCount == 2 {
+                return Array(repeating: 0, count: nums.count)
             }
+            continue
         }
-        
-        kSizeArr.insert((num.key,num.value), at: left)
+        product *= num
     }
     
-    return kSizeArr.map{$0.0}
+    for num in nums {
+        if zeroCount == 1 {
+            answer.append(num == 0 ? product : 0)
+        } else {
+            answer.append(product/num)
+        }
+    }
+
+   return answer
 }
 
-print(topKFrequent([1,1,1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,4,5,5,6,6,7,8],4))
+print(productExceptSelf([-1,1,0,-3,3]))
