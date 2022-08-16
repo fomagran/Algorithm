@@ -1,28 +1,47 @@
-func productExceptSelf(_ nums: [Int]) -> [Int] {
-    var answer: [Int] = []
-    var product: Int = 1
-    var zeroCount: Int = 0
+func isValidSudoku(_ board: [[Character]]) -> Bool {
+    var boxDic:[Int:[Character:Bool]] = [:]
+    var vDic:[Int:[Character:Bool]] = [:]
     
-    for num in nums {
-        if num == 0 {
-            zeroCount += 1
-            if zeroCount == 2 {
-                return Array(repeating: 0, count: nums.count)
+    for i in 0..<9 {
+        var hDic:[Character:Bool] = [:]
+        for j in 0..<9 {
+            let current = board[i][j]
+            
+            if current == "." {
+                continue
             }
-            continue
+            
+            let boxNum = i/3*3 + j/3
+                        
+            if boxDic[boxNum] == nil {
+                boxDic[boxNum] = [current:true]
+            } else {
+                if boxDic[boxNum]![current] != nil {
+                    return false
+                } else {
+                    boxDic[boxNum]![current] = true
+                }
+            }
+            
+            if vDic[j] == nil {
+                vDic[j] = [current:true]
+            } else {
+                if vDic[j]![current] != nil {
+                    return false
+                } else {
+                    vDic[j]![current] = true
+                }
+            }
+            
+            if hDic[current] != nil {
+                return false
+            } else {
+                hDic[current] = true
+            }
         }
-        product *= num
     }
     
-    for num in nums {
-        if zeroCount == 1 {
-            answer.append(num == 0 ? product : 0)
-        } else {
-            answer.append(product/num)
-        }
-    }
-
-   return answer
+    return true
 }
 
-print(productExceptSelf([-1,1,0,-3,3]))
+print(isValidSudoku([["5","3",".",".","7",".",".",".","."],["6",".",".","1","9","5",".",".","."],[".","9","8",".",".",".",".","6","."],["8",".",".",".","6",".",".",".","3"],["4",".",".","8",".","3",".",".","1"],["7",".",".",".","2",".",".",".","6"],[".","6",".",".",".",".","2","8","."],[".",".",".","4","1","9",".",".","5"],[".",".",".",".","8",".",".","7","9"]]))
