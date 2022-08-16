@@ -1,47 +1,13 @@
-func isValidSudoku(_ board: [[Character]]) -> Bool {
-    var boxDic:[Int:[Character:Bool]] = [:]
-    var vDic:[Int:[Character:Bool]] = [:]
+func isPalindrome(_ s: String) -> Bool {
+    var original:String = ""
     
-    for i in 0..<9 {
-        var hDic:[Character:Bool] = [:]
-        for j in 0..<9 {
-            let current = board[i][j]
-            
-            if current == "." {
-                continue
-            }
-            
-            let boxNum = i/3*3 + j/3
-                        
-            if boxDic[boxNum] == nil {
-                boxDic[boxNum] = [current:true]
-            } else {
-                if boxDic[boxNum]![current] != nil {
-                    return false
-                } else {
-                    boxDic[boxNum]![current] = true
-                }
-            }
-            
-            if vDic[j] == nil {
-                vDic[j] = [current:true]
-            } else {
-                if vDic[j]![current] != nil {
-                    return false
-                } else {
-                    vDic[j]![current] = true
-                }
-            }
-            
-            if hDic[current] != nil {
-                return false
-            } else {
-                hDic[current] = true
-            }
+    s.forEach {
+        if $0.isLetter || $0.isNumber {
+            original += $0.lowercased()
         }
     }
     
-    return true
+    return original == String(original.reversed())
 }
 
-print(isValidSudoku([["5","3",".",".","7",".",".",".","."],["6",".",".","1","9","5",".",".","."],[".","9","8",".",".",".",".","6","."],["8",".",".",".","6",".",".",".","3"],["4",".",".","8",".","3",".",".","1"],["7",".",".",".","2",".",".",".","6"],[".","6",".",".",".",".","2","8","."],[".",".",".","4","1","9",".",".","5"],[".",".",".",".","8",".",".","7","9"]]))
+print(isPalindrome("A man, a plan, a canal: Panama"))
