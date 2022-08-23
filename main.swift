@@ -1,48 +1,24 @@
-func checkInclusion(_ s1: String, _ s2: String) -> Bool {
-    var dic: [Character:Int] = [:]
-    var dicCopy:[Character:Int] = [:]
-    let s2Map:[Character] = s2.map{$0}
+func solution(_ survey:[String], _ choices:[Int]) -> String {
+    var charDic: [Character:Int] = ["R":0,"T":0,"C":0,"F":0,"J":0,"M":0,"A":0,"N":0]
     
-    s1.forEach {
-        dic[$0,default:0] += 1
-        dicCopy[$0,default:0] += 1
-    }
-    
-    var left: Int = 0
-    
-    for (i,c) in s2.enumerated() {
-        if dic[c] == nil {
-            if dicCopy[c] != nil {
-                while s2Map[left] != c {
-                    let leftChar = s2Map[left]
-                    dic[leftChar,default:0] = min(dicCopy[leftChar,default: 0] + 1,dic[leftChar]!)
-                    left += 1
-                }
-                left += 1
-            } else {
-                dic = dicCopy
-                left = i+1
-            }
-            continue
-        }
-        
-        dic[c]! -= 1
-        
-        if dic[c]! == 0 {
-            dic[c] = nil
-        }
-        
-        if dic.isEmpty {
-            return true
+    for i in 0..<survey.count {
+        let chars: [Character] = Array(survey[i])
+
+        if choices[i] < 4 {
+            charDic[chars[0]]! += 4 - choices[i]
+        } else {
+            charDic[chars[1]]! += choices[i] - 4
         }
     }
     
-    return false
+    let RT = charDic["R"]! >= charDic["T"]! ? "R" : "T"
+    let CF = charDic["C"]! >= charDic["F"]! ? "C" : "F"
+    let JM = charDic["J"]! >= charDic["M"]! ? "J" : "M"
+    let AN = charDic["A"]! >= charDic["N"]! ? "A" : "N"
+    
+    return RT + CF + JM + AN
 }
 
-
-print(checkInclusion("hello","ooolleoooleh"))
-print(checkInclusion("abcdef", "abcdeabf"))
-print(checkInclusion("abcdef", "abcdoabcdef"))
-print(checkInclusion("abcdef", "abcdegf"))
-print(checkInclusion("abcdef", "abbcde"))
+print(solution(["AN", "CF", "MJ", "RT", "NA"], [5,3,2,7,5]))
+print(solution(["RT","CF","JM","AN","NA"], [1,1,1,2,1]))
+print(solution(["TR", "RT", "TR"], [7,1,3]))
