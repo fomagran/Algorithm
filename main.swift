@@ -1,64 +1,53 @@
 import Foundation
 
-func solution(_ queue1:[Int], _ queue2:[Int]) -> Int {
-    var cumulativeSum: [Int] = [0]
-    let q1Length: Int = queue1.count
-    let q2Length: Int = queue2.count
-    var answer: Int = Int.max
+func solution(_ alp:Int, _ cop:Int, _ problems:[[Int]]) -> Int {
+    var sortedProblems: [[Int]] = problems.sorted{max($0[0],$0[1]) < max($1[0],$1[1])}
+    sortedProblems.insert([1,1,1,1,100], at: 0)
+    var currentAlp: Int = alp
+    var currentCop: Int = cop
+    var answer: Int = 0
     
-    for q in queue1 {
-        let last = cumulativeSum.last!
-        cumulativeSum.append(last + q)
-    }
-    
-    for q in queue2 {
-        let last = cumulativeSum.last!
-        cumulativeSum.append(last + q)
-    }
-    
-    let halfTotal: Int = cumulativeSum.last!/2
-    
-    if cumulativeSum.last!%2 == 1 {
-        return -1
-    }
-    
-    if cumulativeSum[q1Length] == halfTotal {
-        return 0
-    }
-    
-    func getWorkCount(l: Int, r: Int) -> Int {
-        if 0..<queue1.count ~= l {
-            if r == q1Length - 1 {
-                return l
-            }
-            if 0..<q1Length ~= r {
-                return l + r + q2Length + 1
-            } else {
-                return l + r - q1Length + 1
+    for i in 0..<problems.count {
+        let nextProblem = sortedProblems[i+1]
+        var minTime = Int.max
+        for j in 0...i {
+            let canSolveMinTime = getMinTime(sortedProblems[j], nextProblem)
+            if minTime > canSolveMinTime{
+                minTime = canSolveMinTime
             }
         }
         
-        return r + 1 + (l-q1Length)
+        currentAlp = max(currentAlp,nextProblem[0])
+        currentCop = max(currentCop,nextProblem[1])
+        answer += minTime
     }
     
-    var start: Int = 0
-    
-    for i in 1..<cumulativeSum.count {
-        if cumulativeSum[i] - cumulativeSum[start] > halfTotal {
-            while cumulativeSum[i] - cumulativeSum[start] > halfTotal {
-                start += 1
-            }
+    func getMinTime(_ current:[Int],_ next:[Int]) -> Int {
+        let lackOfAlp: Int = next[0] - currentAlp
+        let lackOfCop: Int = next[1] - currentCop
+        
+        //case 1 문제 안풀고 늘리기
+        let bothTime: Int = lackOfAlp + lackOfCop
+        
+        //case 2 알고력 문제로 코딩력 시간으로
+        let onlyAlp = lackOfAlp > 0 ? lackOfAlp/current[2] * current[4] + lackOfCop : lackOfCop
+        
+        //case 3 알고력 시간으로 코딩력 문제로
+        let onlyCop = lackOfCop > 0 ? lackOfCop/current[3] * current[4] + lackOfAlp : lackOfAlp
+        
+        //case 4 코딩력 알고력 모두 문제로
+        var bothProblem = onlyAlp - lackOfCop
+        let lackOfCop2 = lackOfCop - current[3] * lackOfAlp/current[2]
+        if lackOfCop2 > 0 {
+            bothProblem += lackOfCop2/current[3] * current[4]
         }
         
-        if cumulativeSum[i] - cumulativeSum[start] == halfTotal {
-            answer = min(answer,getWorkCount(l: start, r: i-1))
-        }
+        return min(bothTime,onlyAlp,onlyCop,bothProblem)
     }
     
-    return answer == Int.max ? -1 : answer
+    return answer
 }
 
-print(solution([3,2,7,2], [4,6,5,1]))
-print(solution([1,2,1,2], [1,10,1,2]))
-print(solution([2,1], [1,2]))
-print(solution([1,1,3], [3]))
+
+print(solution(10, 10, [[10,15,2,1,2],[20,20,3,3,4]]))
+print(solution(0, 0, [[0,0,2,1,2],[4,5,3,1,2],[4,11,4,0,2],[10,4,0,4,2]]))
