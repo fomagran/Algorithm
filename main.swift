@@ -1,35 +1,62 @@
-func solution(_ alp:Int, _ cop:Int, _ problems:[[Int]]) -> Int {
-    var maxAlp: Int = alp
-    var maxCop: Int = cop
-    
-    problems.forEach {
-        maxAlp = max(maxAlp,$0[0])
-        maxCop = max(maxCop,$0[1])
+import Foundation
+
+func solution(_ n:Int, _ paths:[[Int]], _ gates:[Int], _ summits:[Int]) -> [Int] {
+    var answer: [Int] = [-1,Int.max]
+    var connection: [Int:[[Int]]] = [:]
+    var summitDic: [Int:Bool] = [:]
+    var gateDic: [Int:Bool] = [:]
+                                  
+    for path in paths {
+        connection[path[0],default:[]].append([path[1],path[2]])
+        connection[path[1],default:[]].append([path[1],path[2]])
     }
     
-    var dp: [[Int]] = Array(repeating:Array(repeating:10000,count:maxCop+1),count:maxAlp+1)
-    dp[alp][cop] = 0
+    for summit in summits {
+        summitDic[summit] = true
+    }
     
-    for currentAlp in alp...maxAlp {
-        for currentCop in cop...maxCop {
-            var minAlp = min(currentAlp+1,maxAlp)
-            var minCop = min(currentCop+1,maxCop)
-            dp[minAlp][currentCop] = min(dp[minAlp][currentCop],dp[currentAlp][currentCop] + 1)
-            dp[currentAlp][minCop] = min(dp[currentAlp][minCop],dp[currentAlp][currentCop] + 1)
-            
-            problems.forEach { problem in
-                if currentAlp >= problem[0] && currentCop >= problem[1] {
-                    minAlp = min(maxAlp,currentAlp+problem[2])
-                    minCop = min(maxCop,currentCop+problem[3])
-                    dp[minAlp][minCop] = min(dp[minAlp][minCop],dp[currentAlp][currentCop] + problem[4])
-                }
-            }
+    for gate in gates {
+        gateDic[gate] = true
+    }
+
+    func dfs(_ gate: Int, _ current: Int,_ maxIntensity: Int,_ summit: Int, _ visit: [Int:[Int]]) {
+        //출입구로 다시 돌아온 경우
+        print(gate,current,maxIntensity,summit)
+        if gate == current && maxIntensity != -1 && summit != -1 {
+            answer = [summit,maxIntensity]
+            return
+        }
+        //산봉우리가 두 번 나온 경우
+        if summit != -1 && summitDic[current] != nil {
+            return
+        }
+        
+        //출입구가 두 번 나온 경우
+        if gateDic[current] != nil && gate != current {
+            return
+        }
+        
+        //현재 가장 작은 intensity보다 크거나 같은 경우
+        if maxIntensity >= answer[1] {
+            return
+        }
+
+        for point in connection[current,default:[]] {
+            //한번 간 곳 방지
+           if !visit[current,default:[]].contains(point[0]) {
+              var newVisit = visit
+              newVisit[current,default:[]].append(point[0])
+              let firstSummit: Int = summitDic[point[0]] != nil ? point[0] : summit
+              dfs(gate,point[0],max(maxIntensity,point[1]),firstSummit,newVisit)
+           }
         }
     }
     
-    return dp[maxAlp][maxCop]
+    for gate in gates {
+        dfs(gate,gate,-1,-1,[:])
+    }
+                                  
+    return answer
 }
 
-
-print(solution(10, 10, [[10,15,2,1,2],[20,20,3,3,4]]))
-print(solution(0, 0, [[0,0,2,1,2],[4,5,3,1,2],[4,11,4,0,2],[10,4,0,4,2]]))
+print(solution(6, [[1, 2, 3], [2, 3, 5], [2, 4, 2], [2, 5, 4], [3, 4, 4], [4, 5, 3], [4, 6, 1], [5, 6, 1]], [1, 3], [5]))
