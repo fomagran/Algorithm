@@ -5,7 +5,7 @@ func solution(_ n:Int, _ paths:[[Int]], _ gates:[Int], _ summits:[Int]) -> [Int]
     var connection: [Int:[[Int]]] = [:]
     var summitDic: [Int:Bool] = [:]
     var gateDic: [Int:Bool] = [:]
-    
+                                  
     for path in paths {
         connection[path[0],default:[]].append([path[1],path[2]])
         connection[path[1],default:[]].append([path[0],path[2]])
@@ -18,8 +18,8 @@ func solution(_ n:Int, _ paths:[[Int]], _ gates:[Int], _ summits:[Int]) -> [Int]
     for gate in gates {
         gateDic[gate] = true
     }
-    
-    func dfs(_ gate: Int, _ current: Int,_ maxIntensity: Int,_ summit: Int, _ visit: [Int:[Int]]) {
+
+    func dfs(_ gate: Int, _ current: Int,_ maxIntensity: Int,_ summit: Int, _ visit: [Int:[Int:Bool]]) {
         //출입구로 다시 돌아온 경우
         if gate == current && maxIntensity != -1 && summit != -1 {
             //산봉 우리가 더 작은 경우
@@ -45,22 +45,22 @@ func solution(_ n:Int, _ paths:[[Int]], _ gates:[Int], _ summits:[Int]) -> [Int]
         if maxIntensity > answer[1] {
             return
         }
-        
+
         for point in connection[current,default:[]] {
             //한번 간 곳 방지
-            if !visit[current,default:[]].contains(point[0]) {
-                var newVisit = visit
-                newVisit[current,default:[]].append(point[0])
-                let firstSummit: Int = summitDic[point[0]] != nil ? point[0] : summit
-                dfs(gate,point[0],max(maxIntensity,point[1]),firstSummit,newVisit)
-            }
+            if visit[current,default:[:]][point[0]] == nil {
+              var newVisit = visit
+                newVisit[current,default:[:]][point[0]] = true
+              let firstSummit: Int = summitDic[point[0]] != nil ? point[0] : summit
+              dfs(gate,point[0],max(maxIntensity,point[1]),firstSummit,newVisit)
+           }
         }
     }
     
     for gate in gates {
         dfs(gate,gate,-1,-1,[:])
     }
-    
+                                  
     return answer
 }
 
