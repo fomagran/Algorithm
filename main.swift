@@ -1,15 +1,18 @@
 import Foundation
 
+struct PointInfo {
+    let gate: Int
+    let current: Int
+    let maxIntensity: Int
+}
+
 func solution(_ n:Int, _ paths:[[Int]], _ gates:[Int], _ summits:[Int]) -> [Int] {
     var answer: [Int] = [Int.max,Int.max]
     var connection: [Int:[[Int]]] = [:]
     var summitDic: [Int:Bool] = [:]
     var gateDic: [Int:Bool] = [:]
-                                  
-    for path in paths {
-        connection[path[0],default:[]].append([path[1],path[2]])
-        connection[path[1],default:[]].append([path[0],path[2]])
-    }
+    var bfsQueue: [PointInfo] = []
+    var intensities: [Int] = Array(repeating: Int.max, count: n+1)
     
     for summit in summits {
         summitDic[summit] = true
@@ -18,47 +21,45 @@ func solution(_ n:Int, _ paths:[[Int]], _ gates:[Int], _ summits:[Int]) -> [Int]
     for gate in gates {
         gateDic[gate] = true
     }
+    
+    for path in paths {
+        connection[path[0],default:[]].append([path[1],path[2]])
+        connection[path[1],default:[]].append([path[0],path[2]])
+    }
 
-    func dfs(_ gate: Int, _ current: Int,_ maxIntensity: Int,_ summit: Int, _ visit: [Int:[Int:Bool]]) {
-        //출입구로 다시 돌아온 경우
-        if gate == current && maxIntensity != -1 && summit != -1 {
-            //산봉 우리가 더 작은 경우
-            if answer[1] == maxIntensity {
-                answer = [min(summit,answer[0]),maxIntensity]
-            } else {
-                answer = [summit,maxIntensity]
+    func check(_ info: PointInfo) {
+        if summitDic[info.current] != nil || info.maxIntensity > intensities[info.current] {
+            return
+        }
+        
+        for next in connection[info.current,default:[]] where gateDic[next[0]] == nil {
+            let maxIntensity = max(info.maxIntensity,next[1])
+            
+            if maxIntensity < intensities[next[0]] {
+                updateAnswer(next[0], maxIntensity)
+                intensities[next[0]] = maxIntensity
+                bfsQueue.append(PointInfo(gate: info.gate, current: next[0], maxIntensity:maxIntensity))
             }
-            return
         }
-        
-        //산봉우리가 두 번 나온 경우
-        if summit != -1 && current != summit && summitDic[current] != nil {
-            return
-        }
-        
-        //출입구가 두 번 나온 경우
-        if gateDic[current] != nil && gate != current {
-            return
-        }
-        
-        //현재 가장 작은 intensity보다 크거나 같은 경우
-        if maxIntensity > answer[1] {
-            return
-        }
+    }
 
-        for point in connection[current,default:[]] {
-            //한번 간 곳 방지
-            if visit[current,default:[:]][point[0]] == nil {
-              var newVisit = visit
-                newVisit[current,default:[:]][point[0]] = true
-              let firstSummit: Int = summitDic[point[0]] != nil ? point[0] : summit
-              dfs(gate,point[0],max(maxIntensity,point[1]),firstSummit,newVisit)
-           }
+    
+    for gate in gates {
+        bfsQueue.append(PointInfo(gate: gate, current: gate, maxIntensity: -1))
+        while !bfsQueue.isEmpty {
+            let first = bfsQueue.removeFirst()
+            check(first)
         }
     }
     
-    for gate in gates {
-        dfs(gate,gate,-1,-1,[:])
+    func updateAnswer(_ index: Int,_ maxIntensity: Int) {
+        if summitDic[index] != nil {
+            if maxIntensity == answer[1] {
+                answer[0] = min(answer[0],index)
+            } else if maxIntensity < answer[1] {
+                answer = [index,maxIntensity]
+            }
+        }
     }
                                   
     return answer
