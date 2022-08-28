@@ -1,7 +1,6 @@
 import Foundation
 
-struct PointInfo {
-    let gate: Int
+struct Node {
     let current: Int
     let maxIntensity: Int
 }
@@ -11,7 +10,7 @@ func solution(_ n:Int, _ paths:[[Int]], _ gates:[Int], _ summits:[Int]) -> [Int]
     var connection: [Int:[[Int]]] = [:]
     var summitDic: [Int:Bool] = [:]
     var gateDic: [Int:Bool] = [:]
-    var bfsQueue: [PointInfo] = []
+    var bfsQueue: [Node] = []
     var intensities: [Int] = Array(repeating: Int.max, count: n+1)
     
     for summit in summits {
@@ -26,29 +25,32 @@ func solution(_ n:Int, _ paths:[[Int]], _ gates:[Int], _ summits:[Int]) -> [Int]
         connection[path[0],default:[]].append([path[1],path[2]])
         connection[path[1],default:[]].append([path[0],path[2]])
     }
+    
+    for gate in gates {
+        bfsQueue.append(Node(current: gate, maxIntensity: -1))
+        bfs()
+    }
+    
+    func bfs() {
+        while !bfsQueue.isEmpty {
+            let first = bfsQueue.removeFirst()
+            checkNextNode(first)
+        }
+    }
 
-    func check(_ info: PointInfo) {
-        if summitDic[info.current] != nil || info.maxIntensity > intensities[info.current] {
+    func checkNextNode(_ node: Node) {
+        if summitDic[node.current] != nil || node.maxIntensity > intensities[node.current] {
             return
         }
         
-        for next in connection[info.current,default:[]] where gateDic[next[0]] == nil {
-            let maxIntensity = max(info.maxIntensity,next[1])
+        for next in connection[node.current,default:[]] where gateDic[next[0]] == nil {
+            let maxIntensity = max(node.maxIntensity,next[1])
             
             if maxIntensity < intensities[next[0]] {
                 updateAnswer(next[0], maxIntensity)
                 intensities[next[0]] = maxIntensity
-                bfsQueue.append(PointInfo(gate: info.gate, current: next[0], maxIntensity:maxIntensity))
+                bfsQueue.append(Node(current: next[0], maxIntensity:maxIntensity))
             }
-        }
-    }
-
-    
-    for gate in gates {
-        bfsQueue.append(PointInfo(gate: gate, current: gate, maxIntensity: -1))
-        while !bfsQueue.isEmpty {
-            let first = bfsQueue.removeFirst()
-            check(first)
         }
     }
     
