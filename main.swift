@@ -1,15 +1,21 @@
-func carFleet(_ target: Int, _ position: [Int], _ speed: [Int]) -> Int {
-    let sortedCars = (0..<position.count).map{[position[$0],speed[$0]]}.sorted{$0[0] > $1[0]}
-    var stack = [Double]()
+func search(_ nums: [Int], _ target: Int) -> Int {
+    var left = 0
+    var right = nums.count - 1
     
-    for car in sortedCars {
-        let time: Double = Double(target-car[0])/Double(car[1])
-        if stack.last ?? -1 < time {
-            stack.append(time)
+    while left <= right {
+        let mid = (left + right)/2
+        
+        if nums[mid] == target {
+            left = mid
+            break
+        } else if nums[mid] < target {
+            left = mid + 1
+        } else {
+            right = mid - 1
         }
     }
     
-    return stack.count
+    return nums[min(left,nums.count-1)] == target ? left : -1
 }
 
-print(carFleet(12, [10,8,0,5,3], [2,4,1,1,3]))
+print(search([-1,0,3,5,9,12], 13))
