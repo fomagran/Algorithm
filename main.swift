@@ -1,28 +1,16 @@
 func minEatingSpeed(_ piles: [Int], _ h: Int) -> Int {
-    let sortedPiles = piles.sorted{$0 < $1}
-
-outer:for i in 0..<piles.count {
-        let current = sortedPiles[i]
-        var total = i
-        
-        for j in i..<piles.count {
-           total += sortedPiles[j]%current == 0 ? sortedPiles[j]/current : sortedPiles[j]/current + 1
-           if total > h {
-               continue outer
-           }
-        }
-
-      var left = i == 0 ? 1 : sortedPiles[i-1]
-      var right = current
+    
+      var left = 1
+      var right = 1000000000
         
         while left <= right {
             let mid = (left + right)/2
-            total = i
+            var total = 0
             
-            for j in i..<piles.count {
-                total += sortedPiles[j]%mid == 0 ? sortedPiles[j]/mid : sortedPiles[j]/mid + 1
+            piles.forEach { pile in
+                total += pile%mid == 0 ? pile/mid : pile/mid + 1
             }
-            
+
             if total > h {
                 left = mid + 1
             } else {
@@ -30,11 +18,8 @@ outer:for i in 0..<piles.count {
             }
             
         }
-        
-        return left
-    }
     
-    return 1
+    return left
 }
 
 print(minEatingSpeed([31288470], 968709470))
