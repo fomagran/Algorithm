@@ -1,32 +1,35 @@
+public class Node:Hashable {
+    public var val: Int
+    public var next: Node?
+    public var random: Node?
+    public init(_ val: Int) {
+        self.val = val
+        self.next = nil
+        self.random = nil
+    }
+}
+
 func copyRandomList(_ head: Node?) -> Node? {
     var node = head
-    var root = Node(-1)
-    var copiedNode = root
+    var copiedDic =  [Node: Node]()
     
     while node != nil {
-        let newNode = Node(node!.val)
-        newNode.next = node?.next
-        node?.next = newNode
-        node = newNode.next
+        copiedDic[node!] = Node(node!.val)
+        node = node!.next
     }
     
     node = head
     
     while node != nil {
-        let newNode = node?.next
-        newNode?.random = node?.random?.next
-        node = newNode?.next
+        let copiedNode = copiedDic[node!]
+        if let next = node!.next {
+            copiedNode?.next = copiedDic[next]
+        }
+        if let random = node!.random {
+            copiedNode?.random = copiedDic[random]
+        }
+        node = node!.next
     }
     
-    node = head
-    
-    while node != nil {
-        let newNode = node?.next
-        copiedNode.next = newNode
-        copiedNode = copiedNode.next!
-        node?.next = newNode?.next
-        node = node?.next
-    }
-    
-    return root.next
+    return copiedDic[head!]
 }
