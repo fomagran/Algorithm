@@ -1,12 +1,26 @@
-func hasCycle(_ head: ListNode?) -> Bool {
-    if head == nil {
-        return false
+func findDuplicate(_ nums: [Int]) -> Int {
+    var tortoise = 0
+    var hare = 0
+    
+    while true{
+        tortoise = nums[tortoise]
+        hare = nums[nums[hare]]
+        
+        if tortoise == hare {
+            break
+        }
     }
     
-    if head!.val == Int.max {
-        return true
+    tortoise = 0
+    
+    while tortoise != hare {
+        tortoise = nums[tortoise]
+        hare = nums[hare]
+        
+        if tortoise == hare {
+            break
+        }
     }
     
-    head!.val = Int.max
-    return hasCycle(head!.next)
+    return tortoise
 }
