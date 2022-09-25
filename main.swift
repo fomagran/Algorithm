@@ -1,82 +1,31 @@
-class Node {
-    var key: Int
-    var val: Int
-    var prev: Node?
-    var next: Node?
-    
-    init(_ key: Int ,_ val: Int) {
-        self.key = key
+public class TreeNode {
+    public var val: Int
+    public var left: TreeNode?
+    public var right: TreeNode?
+    public init() { self.val = 0; self.left = nil; self.right = nil; }
+    public init(_ val: Int) { self.val = val; self.left = nil; self.right = nil; }
+    public init(_ val: Int, _ left: TreeNode?, _ right: TreeNode?) {
         self.val = val
+        self.left = left
+        self.right = right
     }
 }
 
-class LRUCache {
-    var head: Node?
-    var tail: Node?
-    var capacity = 0
-    var cache = [Int: Node]()
-    var count = 0
-    
-    init(_ capacity: Int) {
-        self.capacity = capacity
-    }
-    
-    func get(_ key: Int) -> Int {
-        if let _ = cache[key] {
-            replace(key)
-        }
-        return cache[key]?.val ?? -1
-    }
-    
-    func put(_ key: Int, _ value: Int) {
-        count += 1
-        if head == nil {
-            head = Node(key, value)
-            tail = head
-            cache[key] = head
+func invertTree(_ root: TreeNode?) -> TreeNode? {
+    func dfs(_ node: TreeNode?) {
+        if node?.left == nil {
             return
         }
         
-        if cache[key] == nil {
-            cache[key] = Node(key,value)
-        } else {
-            count -= 1
-            cache[key]?.val = value
-        }
         
-        if count > capacity {
-            delete(key)
-        }
+        node?.left = node?.right
+        node?.right = node?.left
         
-        if head !== cache[key] {
-            replace(key)
-        }
+        dfs(node?.left)
+        dfs(node?.right)
     }
+    dfs(root)
     
-    func insert(_ key: Int) {
-        cache[key]?.next = head
-        head?.prev = cache[key]
-        head = cache[key]
-        head?.prev = nil
-    }
     
-    func delete(_ key: Int) {
-        cache[tail!.key] = nil
-        if head === tail {
-            head = cache[key]
-            tail = head
-        } else {
-            tail = tail?.prev
-            tail?.next = nil
-        }
-        
-        count -= 1
-    }
-    
-    func replace(_ key: Int) {
-        cache[key]?.prev?.next = cache[key]?.next
-        cache[key]?.next?.prev = cache[key]?.prev
-        tail = cache[key] === tail ? cache[key]?.prev : tail
-        insert(key)
-    }
+    return root
 }
