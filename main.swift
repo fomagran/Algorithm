@@ -1,15 +1,23 @@
-func maxDepth(_ root: TreeNode?) -> Int {
-    var answer:Int = -1
+func isBalanced(_ root: TreeNode?) -> Bool {
+    var isBalanced = true
     
-    func dfs(_ node: TreeNode?,_ depth: Int) {
+    func dfs(_ node: TreeNode?) -> Int {
         if node == nil {
-            answer = max(answer,depth)
-            return
+            return 0
         }
-        dfs(node?.left,depth+1)
-        dfs(node?.right,depth+1)
+        
+        let left = dfs(node?.left)
+        let right = dfs(node?.right)
+        
+        if !isBalanced || abs(left-right) > 1 {
+            isBalanced = false
+            return 0
+        }
+        
+        return max(left,right) + 1
     }
     
-    dfs(root,0)
-    return answer
+    dfs(root)
+    
+    return isBalanced
 }
