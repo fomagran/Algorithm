@@ -12,50 +12,35 @@ public class TreeNode {
 }
 
 func isSameTree(_ p: TreeNode?, _ q: TreeNode?) -> Bool {
-    var pVal = [Int]()
-    var qVal = [Int]()
-    
-    func dfs(_ node: TreeNode?,_ isP: Bool, _ n: Int) {
-        if isP {
-            pVal.append(node?.val ?? Int.min)
-        } else {
-            qVal.append(node?.val ?? Int.min)
-        }
-
-        if node == nil {
-            return
+    func dfs(_ pNode: TreeNode?, _ qNode: TreeNode?) -> Bool {
+        if pNode == nil && qNode == nil {
+            return true
         }
         
-        dfs(node?.left,isP,n+1)
-        dfs(node?.right,isP,n+1)
-    }
-    
-    dfs(p, true,0)
-    dfs(q,false,0)
-    
-    for i in 0..<pVal.count {
-        if pVal[i] != qVal[i] {
-            return false
+        if pNode?.val != qNode?.val {
+            return dfs(pNode?.left,qNode?.left) &&    dfs(pNode?.right,qNode?.right)
         }
+        
+        return false
     }
     
-    return true
+    return  dfs(p, q)
 }
 
-let p:TreeNode? = TreeNode(0)
-p?.left = TreeNode(1)
-p?.right = TreeNode(2)
-p?.left?.left = TreeNode(3)
-p?.left?.right = TreeNode(4)
-p?.right?.left = TreeNode(5)
-p?.right?.right = TreeNode(6)
+let p:TreeNode? = TreeNode(10)
+p?.left = TreeNode(5)
+p?.right = TreeNode(15)
+//p?.left?.left = TreeNode(3)
+//p?.left?.right = TreeNode(4)
+//p?.right?.left = TreeNode(5)
+//p?.right?.right = TreeNode(6)
 
-let q:TreeNode? = TreeNode(0)
-q?.left = TreeNode(1)
-q?.right = TreeNode(2)
-q?.left?.left = TreeNode(3)
-q?.left?.right = TreeNode(4)
-q?.right?.left = TreeNode(5)
-q?.right?.right = TreeNode(6)
+let q:TreeNode? = TreeNode(10)
+q?.left = TreeNode(5)
+//q?.right = TreeNode()
+//q?.left?.left = TreeNode(3)
+q?.left?.right = TreeNode(15)
+//q?.right?.left = TreeNode(5)
+//q?.right?.right = TreeNode(6)
 
 print(isSameTree(p, q))
