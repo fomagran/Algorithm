@@ -11,36 +11,31 @@ public class TreeNode {
     }
 }
 
-func isSameTree(_ p: TreeNode?, _ q: TreeNode?) -> Bool {
-    func dfs(_ pNode: TreeNode?, _ qNode: TreeNode?) -> Bool {
-        if pNode == nil && qNode == nil {
-            return true
-        }
-        
-        if pNode?.val != qNode?.val {
-            return dfs(pNode?.left,qNode?.left) &&    dfs(pNode?.right,qNode?.right)
-        }
-        
-        return false
-    }
-    
-    return  dfs(p, q)
+struct LevelNode {
+    let level: Int
+    let node: TreeNode?
 }
 
-let p:TreeNode? = TreeNode(10)
-p?.left = TreeNode(5)
-p?.right = TreeNode(15)
-//p?.left?.left = TreeNode(3)
-//p?.left?.right = TreeNode(4)
-//p?.right?.left = TreeNode(5)
-//p?.right?.right = TreeNode(6)
+func levelOrder(_ root: TreeNode?) -> [[Int]] {
+    var queue = [LevelNode(level:1,node:root)]
+    var answer = [[Int]]()
+    
+    while !queue.isEmpty {
+        let first = queue.removeFirst()
+        if first.node == nil {
+            continue
+        }
+        if answer.count < first.level {
+            answer.append([first.node!.val])
+        } else {
+            answer[first.level-1].append(first.node!.val)
+        }
+        
+        queue.append(LevelNode(level: first.level + 1, node: first.node?.left))
+        queue.append(LevelNode(level: first.level + 1, node: first.node?.right))
+    }
+    
+    return answer
+}
 
-let q:TreeNode? = TreeNode(10)
-q?.left = TreeNode(5)
-//q?.right = TreeNode()
-//q?.left?.left = TreeNode(3)
-q?.left?.right = TreeNode(15)
-//q?.right?.left = TreeNode(5)
-//q?.right?.right = TreeNode(6)
 
-print(isSameTree(p, q))
