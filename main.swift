@@ -11,31 +11,50 @@ public class TreeNode {
     }
 }
 
-struct LevelNode {
-    let level: Int
-    let node: TreeNode?
-}
-
-func levelOrder(_ root: TreeNode?) -> [[Int]] {
-    var queue = [LevelNode(level:1,node:root)]
-    var answer = [[Int]]()
+func kthSmallest(_ root: TreeNode?, _ k: Int) -> Int {
+    var array = [root!.val]
     
-    while !queue.isEmpty {
-        let first = queue.removeFirst()
-        if first.node == nil {
-            continue
-        }
-        if answer.count < first.level {
-            answer.append([first.node!.val])
-        } else {
-            answer[first.level-1].append(first.node!.val)
+    func dfs(_ node: TreeNode?, _ parentIndex: Int, _ isLeft: Bool) {
+        if node == nil {
+            return
         }
         
-        queue.append(LevelNode(level: first.level + 1, node: first.node?.left))
-        queue.append(LevelNode(level: first.level + 1, node: first.node?.right))
+        if isLeft {
+            array.insert(node!.val,at: parentIndex)
+            dfs(node?.left,parentIndex,true)
+            dfs(node?.right,parentIndex,false)
+        } else {
+            if parentIndex == array.count - 1 {
+                array.append(node!.val)
+            } else {
+                array.insert(node!.val,at: parentIndex+1)
+            }
+            
+            dfs(node?.left,parentIndex + 1,true)
+            dfs(node?.right,parentIndex + 1,false)
+        }
     }
     
-    return answer
+
+    
+    dfs(root?.left,0,true)
+    dfs(root?.right,0,false)
+    
+    print(array)
+    
+    return array[k-1]
 }
+
+let root = TreeNode(5)
+root.left = TreeNode(3)
+root.right = TreeNode(6)
+root.left?.left = TreeNode(2)
+root.left?.right = TreeNode(4)
+//root.right?.left = TreeNode(3)
+//root.right?.right = TreeNode(6)
+root.left?.left?.left = TreeNode(1)
+
+print(kthSmallest(root, 3))
+
 
 
