@@ -12,49 +12,62 @@ public class TreeNode {
 }
 
 func kthSmallest(_ root: TreeNode?, _ k: Int) -> Int {
-    var array = [root!.val]
+    var array = [Int]()
     
-    func dfs(_ node: TreeNode?, _ parentIndex: Int, _ isLeft: Bool) {
+    func dfs(_ node: TreeNode?) {
         if node == nil {
             return
         }
         
-        if isLeft {
-            array.insert(node!.val,at: parentIndex)
-            dfs(node?.left,parentIndex,true)
-            dfs(node?.right,parentIndex,false)
+        if array.isEmpty {
+            array.append(node!.val)
+            dfs(node?.left)
+            dfs(node?.right)
+            return
+        }
+        
+        var left = 0
+        var right = array.count - 1
+        
+        while left < right {
+            let mid = (left+right)/2
+            
+            if array[mid] < node!.val {
+                right = mid
+            } else {
+                left = mid + 1
+            }
+        }
+        
+        if array[left] < node!.val {
+            array.insert(node!.val, at: left)
         } else {
-            if parentIndex == array.count - 1 {
+            if left + 1  >= array.count - 1 {
                 array.append(node!.val)
             } else {
-                array.insert(node!.val,at: parentIndex+1)
+                array.insert(node!.val, at: left + 1)
             }
-            
-            dfs(node?.left,parentIndex + 1,true)
-            dfs(node?.right,parentIndex + 1,false)
         }
+    
+        dfs(node?.left)
+        dfs(node?.right)
     }
-    
 
+    dfs(root)
     
-    dfs(root?.left,0,true)
-    dfs(root?.right,0,false)
-    
-    print(array)
-    
-    return array[k-1]
+    return array[array.count - k]
 }
 
-let root = TreeNode(5)
-root.left = TreeNode(3)
-root.right = TreeNode(6)
-root.left?.left = TreeNode(2)
-root.left?.right = TreeNode(4)
+let root = TreeNode(3)
+//root.left = TreeNode(1)
+//root.right = TreeNode(4)
+//root.left?.left = TreeNode(2)
+//root.left?.right = TreeNode(2)
 //root.right?.left = TreeNode(3)
 //root.right?.right = TreeNode(6)
-root.left?.left?.left = TreeNode(1)
+//root.left?.left?.left = TreeNode(1)
 
-print(kthSmallest(root, 3))
+print(kthSmallest(root, 1))
 
 
 
