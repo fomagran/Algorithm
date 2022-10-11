@@ -11,63 +11,65 @@ public class TreeNode {
     }
 }
 
-func kthSmallest(_ root: TreeNode?, _ k: Int) -> Int {
-    var array = [Int]()
-    
-    func dfs(_ node: TreeNode?) {
-        if node == nil {
+func buildTree(_ preorder: [Int], _ inorder: [Int]) -> TreeNode? {
+    let root = TreeNode(preorder[0])
+    var tempRoot: TreeNode? = root
+    var node: TreeNode? = tempRoot
+    var pre = 1
+    var ino = 0
+
+    func addLeftChild() {
+        if inorder[ino] == preorder[pre-1] {
             return
         }
-        
-        if array.isEmpty {
-            array.append(node!.val)
-            dfs(node?.left)
-            dfs(node?.right)
-            return
-        }
-        
-        var left = 0
-        var right = array.count - 1
-        
-        while left < right {
-            let mid = (left+right)/2
-            
-            if array[mid] < node!.val {
-                right = mid
-            } else {
-                left = mid + 1
-            }
-        }
-        
-        if array[left] < node!.val {
-            array.insert(node!.val, at: left)
-        } else {
-            if left + 1  >= array.count - 1 {
-                array.append(node!.val)
-            } else {
-                array.insert(node!.val, at: left + 1)
-            }
-        }
     
-        dfs(node?.left)
-        dfs(node?.right)
+        node!.left = TreeNode(preorder[pre])
+        node = node!.left
+        pre += 1
+        addLeftChild()
     }
 
-    dfs(root)
+    func addRightChild() {
+        tempRoot?.right = TreeNode(preorder[pre])
+        findEnd()
+        tempRoot = tempRoot?.right
+        node = tempRoot
+        pre += 1
+    }
+
+    func findEnd() {
+        if inorder[ino] == tempRoot!.val {
+            ino += 1
+            return
+        }
+        ino += 1
+        findEnd()
+    }
     
-    return array[array.count - k]
+    while true {
+        if pre > preorder.count - 1 {
+            break
+        }
+        addLeftChild()
+        if pre > preorder.count - 1 {
+            break
+        }
+        addRightChild()
+    }
+    
+    return root
 }
 
-let root = TreeNode(3)
-//root.left = TreeNode(1)
-//root.right = TreeNode(4)
-//root.left?.left = TreeNode(2)
-//root.left?.right = TreeNode(2)
-//root.right?.left = TreeNode(3)
-//root.right?.right = TreeNode(6)
-//root.left?.left?.left = TreeNode(1)
+let tree = buildTree([1,2,3], [2,3,1])
 
-print(kthSmallest(root, 1))
+func dfs(_ node: TreeNode?) {
+    print(node?.val)
+    if node == nil {
+        return
+    }
+    dfs(node?.left)
+    dfs(node?.right)
+}
 
-
+dfs(tree)
 
