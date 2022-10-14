@@ -11,65 +11,94 @@ public class TreeNode {
     }
 }
 
-func buildTree(_ preorder: [Int], _ inorder: [Int]) -> TreeNode? {
-    let root = TreeNode(preorder[0])
-    var tempRoot: TreeNode? = root
-    var node: TreeNode? = tempRoot
-    var pre = 1
-    var ino = 0
+struct LevelNode {
+    let level: Int
+    let node: TreeNode?
+}
 
-    func addLeftChild() {
-        if inorder[ino] == preorder[pre-1] {
-            return
-        }
+func serialize(_ root: TreeNode?) -> String {
+    var serializedString = ""
+    var queue = [LevelNode(level: 1,node: root)]
+    var currentLevel = 0
     
-        node!.left = TreeNode(preorder[pre])
-        node = node!.left
-        pre += 1
-        addLeftChild()
-    }
-
-    func addRightChild() {
-        tempRoot?.right = TreeNode(preorder[pre])
-        findEnd()
-        tempRoot = tempRoot?.right
-        node = tempRoot
-        pre += 1
-    }
-
-    func findEnd() {
-        if inorder[ino] == tempRoot!.val {
-            ino += 1
-            return
+    while !queue.isEmpty {
+        let first = queue.removeFirst()
+        
+        if first.level > currentLevel {
+            currentLevel += 1
+            serializedString += ",\(first.node?.val ?? -1001)"
+        } else {
+            serializedString += " \(first.node?.val ?? -1001)"
         }
-        ino += 1
-        findEnd()
+        
+        if first.node == nil {
+            continue
+        }
+        
+        queue.append(LevelNode(level: first.level + 1, node: first.node?.left))
+        queue.append(LevelNode(level: first.level + 1, node: first.node?.right))
     }
     
-    while true {
-        if pre > preorder.count - 1 {
-            break
+    print(serializedString)
+    
+    return serializedString
+}
+
+func deserialize(_ data: String) -> TreeNode? {
+    let levelSplit = data.split(separator: ",")
+    var levelNodes = [[TreeNode?]]()
+    var root: TreeNode? = nil
+    
+    for level in levelSplit {
+        levelNodes.append(level.split(separator: " ").map{$0 == "-1001"
+            ? nil : TreeNode(Int($0)!)})
+    }
+
+    for (i,nodes) in levelNodes.enumerated() {
+        if i == 0 {
+            root = levelNodes[i][0]
+            continue
         }
-        addLeftChild()
-        if pre > preorder.count - 1 {
-            break
+        
+        for (j,node) in nodes.enumerated() {
+            if let node = node {
+                let levelNodes = levelNodes[i-1].filter{$0 != nil}
+                let parent = j == 0 ? levelNodes[0] : levelNodes[j/2]
+                
+                if j%2 == 0 {
+                    parent?.left = node
+                } else {
+                    parent?.right = node
+                }
+            }
         }
-        addRightChild()
     }
     
     return root
 }
 
-let tree = buildTree([1,2,3], [2,3,1])
+let tree:TreeNode? = TreeNode(1)
+tree?.left = TreeNode(2)
+tree?.right = TreeNode(3)
+tree?.right?.left = TreeNode(4)
+tree?.right?.right = TreeNode(5)
+tree?.right?.left?.left = TreeNode(6)
+tree?.right?.left?.right = TreeNode(7)
 
-func dfs(_ node: TreeNode?) {
+let string = serialize(tree)
+
+let t = deserialize(string)
+
+func d(_ node: TreeNode?) {
+    
     print(node?.val)
+    
     if node == nil {
         return
     }
-    dfs(node?.left)
-    dfs(node?.right)
+    
+    d(node?.left)
+    d(node?.right)
 }
 
-dfs(tree)
-
+d(t)
