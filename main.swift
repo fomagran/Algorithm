@@ -1,37 +1,31 @@
-class KthLargest {
+func findKthLargest(_ nums: [Int], _ k: Int) -> Int {
     var sortedNums = [Int]()
-    var k = 0
-    
-    init(_ k: Int, _ nums: [Int]) {
-        self.k = k
-        self.sortedNums = nums.sorted{$0 > $1}
-    }
-    
-    func add(_ val: Int) -> Int {
+
+    for num in nums {
+        if sortedNums.isEmpty {
+            sortedNums.append(num)
+            continue
+        }
+        
         var left = 0
         var right = sortedNums.count - 1
         
         while left <= right {
             let mid = (left + right)/2
-            
-            if sortedNums[mid] == val {
+        
+            if sortedNums[mid] == num {
                 left = mid
                 break
-            } else if sortedNums[mid] > val {
+            } else if sortedNums[mid] > num {
                 left = mid + 1
             } else {
                 right = mid - 1
             }
         }
         
-        sortedNums.insert(val, at: left)
-        return sortedNums[k-1]
+        sortedNums.insert(num,at:left)
     }
-}
+    
+    return sortedNums[k-1]
 
-let a = KthLargest(1, [])
-a.add(3)
-a.add(5)
-a.add(10)
-a.add(9)
-a.add(4)
+}
