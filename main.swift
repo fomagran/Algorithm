@@ -1,12 +1,22 @@
-func moveZeroes(_ nums: inout [Int]) {
-    var current = 0
+class Twitter {
+
+    init() {
+        
+    }
     
-    for i in 0..<nums.count {
-        if nums[current] == 0 {
-            nums.remove(at: current)
-            nums.append(0)
-            continue
-        }
-        current += 1
+    func postTweet(_ userId: Int, _ tweetId: Int) {
+        
+    }
+    
+    func getNewsFeed(_ userId: Int) -> [Int] {
+        
+    }
+    
+    func follow(_ followerId: Int, _ followeeId: Int) {
+        
+    }
+    
+    func unfollow(_ followerId: Int, _ followeeId: Int) {
+        
     }
 }
