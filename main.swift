@@ -1,27 +1,20 @@
-func replaceElements(_ arr: [Int]) -> [Int] {
-    var result = arr
-    var current = 0
-    
-    while current < arr.count-1 {
-        var maxIndex = current+1
-        
-        for i in current+1..<arr.count {
-            if arr[maxIndex] < arr[i] {
-                maxIndex = i
-            }
-        }
-        
-        for i in current..<maxIndex {
-            result[i] = arr[maxIndex]
-        }
-        
-        current = maxIndex
+func isSubsequence(_ s: String, _ t: String) -> Bool {
+    if s.count == 0 {
+        return true
     }
     
-    result[arr.count-1] = -1
+    let sMap = Array(s)
+    let tMap = Array(t)
+    var current = 0
     
-    return result
+    for c in tMap {
+        if c == sMap[current] {
+            current += 1
+        }
+        if current == s.count {
+            break
+        }
+    }
+    
+    return current >= s.count
 }
-
-
-print(replaceElements([17,18,5,4,6,1]))
