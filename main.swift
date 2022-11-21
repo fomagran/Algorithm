@@ -1,27 +1,23 @@
-class MedianFinder {
-    private var nums = [Int]()
+func subsetsWithDup(_ nums: [Int]) -> [[Int]] {
+    var answer = Set<[Int]>()
+    answer.insert([])
+    let sorted = nums.sorted()
     
-    func addNum(_ num: Int) {
-        var left = 0
-        var right = nums.count - 1
-        
-        while left <= right {
-            let mid = (left + right)/2
-            
-            if nums[mid] == num {
-                left = mid + 1
-                break
-            } else if nums[mid] < num {
-                left = mid + 1
-            } else {
-                right = mid - 1
-            }
-        }
-        
-        nums.insert(num,at: left)
+    for i in 0..<nums.count {
+        dfs(i,[],sorted,&answer)
     }
-    
-    func findMedian() -> Double {
-        return nums.count%2 == 1 ? Double(nums[nums.count/2]) : Double(nums[nums.count/2-1] + nums[nums.count/2])/2
-    }
+    return  Array(answer)
+}
+
+func dfs(_ level: Int, _ prev: [Int], _ nums: [Int], _ answer: inout Set<[Int]> ) {
+  if level == nums.count {
+    return
+  }
+
+  let current = prev + [nums[level]]
+  answer.insert(current)
+
+  for l in level+1..<nums.count {
+    dfs(l,current,nums,&answer)
+  }
 }
