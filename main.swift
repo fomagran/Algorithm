@@ -1,37 +1,29 @@
 func combinationSum2(_ candidates: [Int], _ target: Int) -> [[Int]] {
-    let sorted = candidates.sorted { $0 < $1 }
-    var answer = Set<[Int]>()
+    var sorted = candidates.sorted()
+    var answer = [[Int]]()
     
-    func dfs(_ depth: Int, _ combination: [Int]) {
-        let sum = combination.reduce(0, { $0 + $1 })
-        
-        if depth == candidates.count {
-            return
-        }
+    func combination(_ start: Int,_ sum: Int, _ picked: [Int]) {
+        let sum = picked.reduce(0,{$0 + $1})
         
         if sum > target {
             return
         }
         
-        if sum == target {
-            answer.insert(combination)
+        if sum == target  {
+            answer.append(picked)
+            return
         }
         
-        for i in depth+1..<candidates.count {
-            var new = combination
-            new.append(sorted[i])
-            dfs(i,new)
+        for i in start..<candidates.count {
+            if sorted[i] > target { return }
+            if i > start, sorted[i] == sorted[i-1] { continue }
+            combination(i+1, sum + sorted[i], picked + [sorted[i]])
         }
     }
     
-    for i in 0..<candidates.count {
-        dfs(i,[sorted[i]])
-    }
+    combination(0, 0, [])
     
-    return Array(answer)
+    return answer
 }
 
-
-
-
-print(combinationSum2([10,1,2,7,6,1,5], 8))
+print(combinationSum2([2,5,2,1,2], 5))
