@@ -1,3 +1,30 @@
-func partition(_ s: String) -> [[String]] {
+    func partition(_ s: String) -> [[String]] {
+        let sMap = s.map{String($0)}
+        var answer = Set<[String]>()
+        
+        for i in 0..<sMap.count {
+            dfs(sMap,i,[],&answer)
+        }
+        
+        return Array(answer)
+    }
     
-}
+    func dfs(_ sMap: [String], _ index: Int, _ strArray: [String], _ answer: inout Set<[String]>) {
+        if index == sMap.count {
+            return
+        }
+        
+        let newArray = strArray + [sMap[index]]
+        
+        if isPalindrome(newArray.joined()) {
+            answer.insert(newArray)
+        }
+        
+        for i in index+1..<sMap.count {
+            dfs(sMap,i,newArray,&answer)
+        }
+    }
+    
+    func isPalindrome(_ str: String) -> Bool {
+        return str == String(str.reversed())
+    }
