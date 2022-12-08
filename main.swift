@@ -1,13 +1,7 @@
-    func partition(_ s: String) -> [[String]] {
-        let sMap = s.map{String($0)}
-        var answer = Set<[String]>()
-        
-        for i in 0..<sMap.count {
-            dfs(sMap,i,[],&answer)
-        }
-        
-        return Array(answer)
-    }
+
+func partition(_ s: String) -> [[String]] {
+    let sMap = s.map{ String($0) }
+    var answer = [[String]]()
     
     func dfs(_ sMap: [String], _ index: Int, _ strArray: [String], _ answer: inout Set<[String]>) {
         if index == sMap.count {
