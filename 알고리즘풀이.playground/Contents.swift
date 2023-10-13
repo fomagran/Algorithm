@@ -1,41 +1,43 @@
 import Foundation
 
-var maxCount = -1
-var pc:[Int:[Int]] = [:]
-
-func solution(_ info:[Int], _ edges:[[Int]]) -> Int {
-    for edge in edges {
-        if pc[edge[0]] == nil {
-            pc[edge[0]] = [edge[1]]
-        }else {
-            pc[edge[0]]!.append(edge[1])
+func solution(_ x:Int, _ y:Int, _ n:Int) -> Int {
+    var queue = [[Int]]()
+    var answer: Int = -1
+    var visited: [Int: Bool] = [:]
+    
+    queue.append([x,0])
+    
+    var index: Int = 0
+    
+    while index < queue.count {
+        let first = queue[index]
+        
+        index += 1
+        
+        if first[0] == y {
+            answer = first[1]
+            break
         }
-    }
-    dfs(1, 0, pc[0]!, info)
-    return maxCount
-}
-
-func dfs(_ sheepCount:Int,_ wolfCount:Int,_ visitableNodes:[Int],_ info:[Int]) {
-    var newSheepCount = sheepCount
-    var newWolfCount = wolfCount
-    print(wolfCount,sheepCount)
-    if wolfCount == sheepCount {
-        maxCount = max(maxCount,sheepCount)
-        return
+        
+        if first[0] > y || visited[first[0]] != nil {
+            continue
+        }
+        
+        visited[first[0]] = true
+        
+        for i in 1...3 {
+            if i == 1 {
+                queue.append([first[0] + n, first[1] + 1])
+            } else {
+                queue.append([first[0] * i,first[1] + 1])
+            }
+        }
     }
     
-    for node in visitableNodes {
-        var newVisitableNodes = visitableNodes
-        let index = newVisitableNodes.firstIndex(of:node)!
-        newVisitableNodes.remove(at: index)
-        newVisitableNodes.append(contentsOf:pc[info[node]] ?? [])
-        if info[node] == 0 {
-            newSheepCount += 1
-        }else {
-            newWolfCount += 1 
-        }
-        dfs(newSheepCount, newWolfCount, newVisitableNodes, info)
-    }
+    return answer
 }
 
-solution([0,0,1,1,1,0,1,0,1,0,1,1], [[0,1],[1,2],[1,4],[0,8],[8,7],[9,10],[9,11],[4,3],[6,5],[4,6],[8,9]])
+
+solution(10, 40 , 5)
+solution(10, 40 , 30)
+solution(2, 5 , 4)

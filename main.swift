@@ -3,22 +3,28 @@ func partition(_ s: String) -> [[String]] {
     let sMap = s.map{ String($0) }
     var answer = [[String]]()
     
-    func dfs(_ sMap: [String], _ index: Int, _ strArray: [String], _ answer: inout Set<[String]>) {
-        if index == sMap.count {
-            return
+    func backtrack(_ depth: Int, _ history: [String]) {
+        if depth == s.count {
+            answer.append(history)
         }
         
-        let newArray = strArray + [sMap[index]]
-        
-        if isPalindrome(newArray.joined()) {
-            answer.insert(newArray)
-        }
-        
-        for i in index+1..<sMap.count {
-            dfs(sMap,i,newArray,&answer)
+        for i in depth..<s.count {
+            let str = sMap[depth..<i+1].joined()
+            if isPalindrome(str) {
+                backtrack(i+1, history + [str])
+            }
         }
     }
     
-    func isPalindrome(_ str: String) -> Bool {
-        return str == String(str.reversed())
-    }
+    backtrack(0, [])
+    
+    return answer
+}
+
+
+
+func isPalindrome(_ str: String) -> Bool {
+    return str == String(str.reversed())
+}
+
+print(partition("aab"))
