@@ -1,43 +1,35 @@
 import Foundation
 
-func solution(_ x:Int, _ y:Int, _ n:Int) -> Int {
-    var queue = [[Int]]()
-    var answer: Int = -1
-    var visited: [Int: Bool] = [:]
+func solution(_ weights:[Int]) -> Int64 {
+    var weightDic: [Int: Int] = [:]
+    var weightsNoOverlap = Set<Int>()
+    var answer: Int = 0
+    var dic: [Int: [Int]] = [:]
     
-    queue.append([x,0])
+    for weight in weights {
+        weightDic[weight, default: 0] += 1
+        weightsNoOverlap.insert(weight)
+    }
     
-    var index: Int = 0
-    
-    while index < queue.count {
-        let first = queue[index]
-        
-        index += 1
-        
-        if first[0] == y {
-            answer = first[1]
-            break
-        }
-        
-        if first[0] > y || visited[first[0]] != nil {
-            continue
-        }
-        
-        visited[first[0]] = true
-        
-        for i in 1...3 {
-            if i == 1 {
-                queue.append([first[0] + n, first[1] + 1])
-            } else {
-                queue.append([first[0] * i,first[1] + 1])
-            }
+    for weight in weightDic.filter({ $0.value > 1 }) {
+        for i in 1..<weight.value {
+            answer += i
         }
     }
     
-    return answer
+    for weight in weightsNoOverlap.sorted() {
+        for i in 2...4 {
+            if dic[weight * i] != nil {
+                for n in dic[weight * i]! {
+                    answer += weightDic[n]! * weightDic[weight]!
+                }
+            }
+            dic[weight * i, default: []].append(weight)
+        }
+    }
+    
+    return Int64(answer)
 }
 
-
-solution(10, 40 , 5)
-solution(10, 40 , 30)
-solution(2, 5 , 4)
+solution([100,180,360,100,270])
+solution([100,180,360,100,270,360,50,50,100])
