@@ -1,28 +1,30 @@
 import Foundation
 
-func solution(_ k:Int, _ tangerine:[Int]) -> Int {
-    var tanDic: [Int: Int] = [:]
-    var k: Int = k
-    var result: Int = 0
+func solution(_ elements:[Int]) -> Int {
+    var allSum: [Int] = [elements[0]]
+    let elementsLength = elements.count
+    var set = Set<Int>()
     
-    for t in tangerine {
-        tanDic[t, default: 0] += 1
+    for i in 1..<elements.count {
+        allSum.append(allSum[i-1] + elements[i])
     }
     
-    let sorted = tanDic.values.sorted { $0 > $1 }
+    for i in elementsLength..<elementsLength + elementsLength {
+        allSum.append(allSum[i-1] + elements[i - elementsLength])
+    }
     
-    for n in sorted {
-        k -= n
-        result += 1
-        
-        if k <= 0 {
-            break
+    
+    for i in 1..<elementsLength {
+        for j in 0..<elementsLength {
+            let end = j + i
+            set.insert(allSum[end] - allSum[j])
         }
     }
     
-    return result
+    return set.count + 1
 }
 
-solution(6, [1, 3, 2, 5, 4, 5, 2, 3])
-solution(4, [1, 3, 2, 5, 4, 5, 2, 3])
-solution(2, [1, 1, 1, 1, 2, 2, 2, 3])
+solution([7,9,1,1,4])
+
+//7 9 1 1 1
+//7 16 17 18 19 26 35 36 37 38
