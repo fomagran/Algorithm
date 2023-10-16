@@ -1,35 +1,28 @@
 import Foundation
 
-func solution(_ weights:[Int]) -> Int64 {
-    var weightDic: [Int: Int] = [:]
-    var weightsNoOverlap = Set<Int>()
-    var answer: Int = 0
-    var dic: [Int: [Int]] = [:]
+func solution(_ k:Int, _ tangerine:[Int]) -> Int {
+    var tanDic: [Int: Int] = [:]
+    var k: Int = k
+    var result: Int = 0
     
-    for weight in weights {
-        weightDic[weight, default: 0] += 1
-        weightsNoOverlap.insert(weight)
+    for t in tangerine {
+        tanDic[t, default: 0] += 1
     }
     
-    for weight in weightDic.filter({ $0.value > 1 }) {
-        for i in 1..<weight.value {
-            answer += i
+    let sorted = tanDic.values.sorted { $0 > $1 }
+    
+    for n in sorted {
+        k -= n
+        result += 1
+        
+        if k <= 0 {
+            break
         }
     }
     
-    for weight in weightsNoOverlap.sorted() {
-        for i in 2...4 {
-            if dic[weight * i] != nil {
-                for n in dic[weight * i]! {
-                    answer += weightDic[n]! * weightDic[weight]!
-                }
-            }
-            dic[weight * i, default: []].append(weight)
-        }
-    }
-    
-    return Int64(answer)
+    return result
 }
 
-solution([100,180,360,100,270])
-solution([100,180,360,100,270,360,50,50,100])
+solution(6, [1, 3, 2, 5, 4, 5, 2, 3])
+solution(4, [1, 3, 2, 5, 4, 5, 2, 3])
+solution(2, [1, 1, 1, 1, 2, 2, 2, 3])
