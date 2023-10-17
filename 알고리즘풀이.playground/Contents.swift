@@ -1,30 +1,25 @@
-import Foundation
-
-func solution(_ elements:[Int]) -> Int {
-    var allSum: [Int] = [elements[0]]
-    let elementsLength = elements.count
-    var set = Set<Int>()
+func solution(_ genres:[String], _ plays:[Int]) -> [Int] {
+    var result: [Int] = []
+    var genresPlayings: [String: Int] = [:]
+    var genresNumbers: [String: [Int: Int]] = [:]
     
-    for i in 1..<elements.count {
-        allSum.append(allSum[i-1] + elements[i])
+    for (i,play) in plays.enumerated() {
+        let genre = genres[i]
+        genresPlayings[genre, default: 0] += play
+        genresNumbers[genre, default: [:]][i] = play
     }
     
-    for i in elementsLength..<elementsLength + elementsLength {
-        allSum.append(allSum[i-1] + elements[i - elementsLength])
-    }
+    let sortedByPlaying = genresPlayings.sorted { $0.value > $1.value}
     
+    for genre in sortedByPlaying {
+        let sorted = genresNumbers[genre.key]!.sorted { $0.value == $1.value ? $0.key < $1.key : $0.value > $1.value }
     
-    for i in 1..<elementsLength {
-        for j in 0..<elementsLength {
-            let end = j + i
-            set.insert(allSum[end] - allSum[j])
+        for i in 0..<min(sorted.count, 2) {
+            result.append(sorted[i].key)
         }
     }
     
-    return set.count + 1
+    return result
 }
 
-solution([7,9,1,1,4])
-
-//7 9 1 1 1
-//7 16 17 18 19 26 35 36 37 38
+solution(["classic", "pop", "classic", "classic", "pop"],[500, 600, 150, 800, 2500])
