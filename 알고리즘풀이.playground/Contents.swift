@@ -1,26 +1,28 @@
-func solution(_ bridge_length:Int, _ weight:Int, _ truck_weights:[Int]) -> Int {
-    var result: Int = 0
-    var truckWeights: [Int] = truck_weights
-    var currentWeight: Int = 0
-    var bridgeTrucks: [Int: Int] = [:]
+func solution(prices: [Int]) -> [Int] {
+    var answer: [Int] = Array(repeating: 0, count: prices.count)
+    var stack: [[Int]] = []
     
-    while !truckWeights.isEmpty || !bridgeTrucks.isEmpty {
-        if bridgeTrucks[result] != nil {
-            currentWeight -= bridgeTrucks[result, default: 0]
-            bridgeTrucks[result] = nil
+    for (i,price) in prices.enumerated() {
+        if stack.isEmpty {
+            stack.append([i,price])
+            continue
         }
         
-        if !truckWeights.isEmpty  && currentWeight + truckWeights.first! <= weight {
-            let first = truckWeights.removeFirst()
-            currentWeight += first
-            bridgeTrucks[result + bridge_length] = first
+        if stack.last![1] > price {
+            while !stack.isEmpty && stack.last![1] > price {
+               let last = stack.removeLast()
+                answer[last[0]] = i - last[0]
+            }
         }
         
-        result += 1
+        stack.append([i,price])
     }
     
+    for n in stack {
+        answer[n[0]] = prices.count - n[0] - 1
+    }
     
-    return result
+    return answer
 }
 
-solution(2, 10, [7,4,5,6])
+solution(prices: [1,2,3,2,3])
